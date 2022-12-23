@@ -1,3 +1,4 @@
+import { describe, test, expect, beforeEach, afterEach, vi } from 'vitest';
 import faker from 'faker';
 import nock from 'nock';
 
@@ -7,14 +8,13 @@ const password = faker.internet.password();
 const clientId = faker.random.uuid();
 const clientSecret = faker.random.uuid();
 
-jest.mock('../src/config.js', () => ({
+vi.mock('../src/config.js', () => ({
   TOKEN_ENDPOINT: tokenEndpoint
 }));
 
 import { Authorization } from '../src/authorization.js';
 
 describe('authorization', () => {
-  jest.setTimeout(2000);
   let authorization;
 
   describe('login', () => {

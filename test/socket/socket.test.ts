@@ -1,4 +1,4 @@
-import 'jest-extended';
+import { beforeEach, describe, expect, vi } from 'vitest';
 import faker from 'faker';
 
 // authorization mock
@@ -7,14 +7,14 @@ import { Authorization } from '../../src/authorization.js';
 const accessToken = faker.random.uuid();
 const mockAuthorizationImplementation = {
   accessToken,
-  login: jest.fn().mockResolvedValue(null),
-  refreshAccessToken: jest.fn().mockResolvedValue(null),
-  isRefreshTokenAvailable: jest.fn()
+  login: vi.fn().mockResolvedValue(null),
+  refreshAccessToken: vi.fn().mockResolvedValue(null),
+  isRefreshTokenAvailable: vi.fn()
 };
 
-jest.mock('../../src/authorization.js', () => {
+vi.mock('../../src/authorization.js', () => {
   return {
-    Authorization: jest.fn().mockImplementation(() => {
+    Authorization: vi.fn().mockImplementation(() => {
       return {
         ...mockAuthorizationImplementation
       }
@@ -27,28 +27,27 @@ jest.mock('../../src/authorization.js', () => {
 const mockConfig = {
   SOCKET_ENDPOINT: faker.internet.url()
 };
-jest.mock('../../src/config.js', () => mockConfig);
+vi.mock('../../src/config.js', () => mockConfig);
 
 // socket-io client mock
 const mockSocketObject = {
   connected: false,
-  close: jest.fn(),
-  on: jest.fn()
+  close: vi.fn(),
+  on: vi.fn()
 };
-const mockSocket = jest.fn(() => mockSocketObject);
-jest.mock('socket.io-client', () => mockSocket);
+const mockSocket = vi.fn(() => mockSocketObject);
+vi.mock('socket.io-client', () => mockSocket);
 
 // socket helper mock
 import { SocketHelper } from "../../src/socket/socket_helper.js"
-jest.mock('../../src/socket/socket_helper.js');
-SocketHelper.stateHandler = jest.fn().mockReturnValue('worked');
-SocketHelper.disconnectHandler = jest.fn().mockReturnValue('worked');
+vi.mock('../../src/socket/socket_helper.js');
+SocketHelper.stateHandler = vi.fn().mockReturnValue('worked');
+SocketHelper.disconnectHandler = vi.fn().mockReturnValue('worked');
 
 import { Socket } from '../../src/socket/socket.js';
 
 describe('socket', () => {
-  jest.setTimeout(2000);
-  console.error = jest.fn();
+  console.error = vi.fn();
   let authorization;
 
   beforeEach(() => {
@@ -60,7 +59,7 @@ describe('socket', () => {
   test('return socket connection if the socket is connected', async () => {
     const connection = {
       connected: true,
-      on: jest.fn()
+      on: vi.fn()
     };
     const socketObject = new Socket(authorization);
     socketObject.socketConnection = connection;

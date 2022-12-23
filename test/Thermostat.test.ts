@@ -1,8 +1,9 @@
+import { describe, test, beforeEach, expect, vi } from 'vitest';
 import { Socket } from '../src/socket/socket.js';
 import { Authorization } from '../src/authorization.js';
 import { Thermostat } from '../src/Thermostat.js';
-jest.mock('../src/socket/socket.js');
-jest.mock('../src/authorization.js');
+vi.mock('../src/socket/socket.js');
+vi.mock('../src/authorization.js');
 
 const standardStartMessage = { "icd_id": "0a-50-30-62-eb-18-ff-ff", "registration": { "name": "Test", "postal_code": "10010", "country": "US", "contractor_id": null, "timezone": "America/New_York", "address1": "501 Avenue of Americas", "address2": null, "city": "New York", "state": "Ny", "fleet_enabled": false, "fleet_enabled_date": null, "product_type": "Sensi Classic with HomeKit" }, "state": { "status": "online", "current_cool_temp": 75, "current_heat_temp": 68, "display_temp": 75.5, "current_operating_mode": "cool", "humidity": 37, "battery_voltage": 3.135, "power_status": "c_wire", "wifi_connection_quality": 48, "periodicity": 0, "comfort_alert": null, "other_error_bitfield": { "bad_temperature_sensor": "off", "bad_humidity_sensor": "off", "stuck_key": "off", "high_voltage": "off", "e5_alert": "off", "error_32": "off", "error_64": "off" }, "current_humidification_percent": 5, "current_dehumidification_percent": 40, "relay_status": { "w": "off", "w2": "off", "g": "off", "y": "off", "y2": "off", "o_b": "on" }, "demand_status": { "humidification": 0, "dehumidification": 0, "overcooling": "no", "cool_stage": null, "heat_stage": null, "aux_stage": null, "heat": 0, "fan": 0, "cool": 0, "aux": 0, "last": "cool", "last_start": null }, "hashedSchedule": "abcdefef", "display_scale": "f", "heat_max_temp": 99, "cool_min_temp": 45, "hold_mode": "off", "operating_mode": "cool", "scheduling": "on", "fan_mode": "auto", "display_humidity": "on", "continuous_backlight": "off", "compressor_lockout": "on", "early_start": "off", "keypad_lockout": "off", "temp_offset": 0, "humidity_offset": 0, "aux_cycle_rate": "medium", "cool_cycle_rate": "medium", "heat_cycle_rate": "medium", "aux_boost": "on", "heat_boost": "on", "cool_boost": "on", "dst_offset": 60, "dst_observed": "yes", "tz_offset": -300, "hold_end": null, "deadband": 2, "display_time": "on", "partial_keypad_lockout": { "setpoint": "on", "system_mode": "on", "fan_mode": "on", "schedule_mode": "on", "settings_menu": "on" }, "lcd_sleep_mode": null, "night_light": null, "outdoor_weather_display": "ff:00:00:ff:ff:ff:00:00:ff:00:00:ff:00:00:ff:00:00:ff:00", "circulating_fan": { "enabled": "off", "duty_cycle": 30 }, "humidity_control": { "humidification": { "target_percent": 5, "enabled": "off", "mode": "humidifier" }, "dehumidification": { "target_percent": 40, "enabled": "off", "mode": "overcooling" }, "status": "none" }, "geofencing": null, "remote_sensor_status": "00", "control": { "mode": "scheduling", "devices": null, "geo_state": null, "device_data": null } } }
 
@@ -93,7 +94,7 @@ describe('temperature updates', () => {
         expect(thermostat.thermostat_temp).toEqual(75.5);
     });
     test('test temp with offset', () => {
-        const updateStateWithOffset = {"icd_id":"0a-50-30-62-eb-18-ff-ff","registration": { "name": "Test", "postal_code": "10010", "country": "US", "contractor_id": null, "timezone": "America/New_York", "address1": "501 Avenue of Americas", "address2": null, "city": "New York", "state": "Ny", "fleet_enabled": false, "fleet_enabled_date": null, "product_type": "Sensi Classic with HomeKit" }, "state":{"display_temp":74,"temp_offset":2,"display_scale":"f","control":{}}}
+        const updateStateWithOffset = { "icd_id": "0a-50-30-62-eb-18-ff-ff", "registration": { "name": "Test", "postal_code": "10010", "country": "US", "contractor_id": null, "timezone": "America/New_York", "address1": "501 Avenue of Americas", "address2": null, "city": "New York", "state": "Ny", "fleet_enabled": false, "fleet_enabled_date": null, "product_type": "Sensi Classic with HomeKit" }, "state": { "display_temp": 74, "temp_offset": 2, "display_scale": "f", "control": {} } }
         thermostat.update(updateStateWithOffset);
         expect(thermostat.thermostatSensor_temp).toEqual(72);
         expect(thermostat.thermostat_temp).toEqual(74);
@@ -113,7 +114,7 @@ describe('temp setting offset', () => {
         expect(thermostat.thermostatSensor_temp).toEqual(72);
         expect(thermostat.thermostat_temp).toEqual(74);
         await thermostat.setThermostatOffset(-2);
-        expect(thermostat.state.temp_offset).toEqual(-2); 
+        expect(thermostat.state.temp_offset).toEqual(-2);
         // sensor hasn't changed but display temp has
         expect(thermostat.thermostatSensor_temp).toEqual(72);
         expect(thermostat.state.display_temp).toEqual(70);
@@ -124,7 +125,7 @@ describe('temp setting offset', () => {
     test('test temp after adding offset and receiving an update', async () => {
         // start condition
         expect(thermostat.thermostatSensor_temp).toEqual(72);
-        
+
         // send update
         await thermostat.setThermostatOffset(-3.0);
         expect(socket.emit).toHaveBeenCalled();
@@ -135,13 +136,13 @@ describe('temp setting offset', () => {
         expect(thermostat.thermostatSensor_temp).toEqual(72);
 
         // response form server with update
-        const updateStateWithOffset = {"icd_id":"0a-50-30-62-eb-18-ff-ff","state":{"status":"online","temp_offset":-3.0,"control":{}},"capabilities":{"min_heat_setpoint":45,"min_cool_setpoint":45,"max_heat_setpoint":99,"max_cool_setpoint":99,"lowest_heat_setpoint_ceiling":60,"highest_cool_setpoint_floor":85}}
+        const updateStateWithOffset = { "icd_id": "0a-50-30-62-eb-18-ff-ff", "state": { "status": "online", "temp_offset": -3.0, "control": {} }, "capabilities": { "min_heat_setpoint": 45, "min_cool_setpoint": 45, "max_heat_setpoint": 99, "max_cool_setpoint": 99, "lowest_heat_setpoint_ceiling": 60, "highest_cool_setpoint_floor": 85 } }
         thermostat.update(updateStateWithOffset);
 
         // check state is good
         expect(thermostat.state.display_temp).toEqual(69);
         expect(thermostat.thermostat_temp).toEqual(69);
         expect(thermostat.thermostatSensor_temp).toEqual(72);
-        
+
     });
 })
