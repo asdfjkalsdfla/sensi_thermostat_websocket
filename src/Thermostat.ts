@@ -2,6 +2,8 @@ import _ from 'lodash';
 import { Socket } from './socket/socket.js';
 import { Registration } from './types/types.js';
 
+const timeDeltaFormatter = new Intl.NumberFormat('en-US', {  minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
 export class Thermostat {
   readonly icd_id: string;
   state: any;
@@ -83,8 +85,9 @@ export class Thermostat {
     const temperatureDifference = sensorTemperature - currentTempAtThermostatSensor;
     const scale = 1;
     const temperatureDifferenceRounded = Math.round(temperatureDifference * scale) / scale;
+    const temperatureDifferenceRoundedMaxMin = Math.min(5, Math.max(-5, temperatureDifferenceRounded));
     const currentTempOffset = this.state.temp_offset;
-    const absChangeInTempOffset = Math.abs(temperatureDifferenceRounded - currentTempOffset);
+    const absChangeInTempOffset = Math.abs(temperatureDifferenceRoundedMaxMin - currentTempOffset);
 
     // DEBUG: Log the information
     // console.log(`Temperature used in thermostat: ${this.state.display_temp}`);
@@ -106,7 +109,7 @@ export class Thermostat {
     const assumedDuration = 10 * 60 * 1000;
     const timeFromLastChangeToOffset: any = (currentDate.valueOf() - this.dateOfLastTempOffsetChange?.valueOf()) || assumedDuration;
     if ((timeFromLastChangeToOffset) < 5 * 60 * 1000) {
-      console.log(`Offset not changed since it was updated recently (offset set ${timeFromLastChangeToOffset / 1000 / 60} min ago at ${this.dateOfLastTempOffsetChange})`);
+      console.log(`Offset not changed since it was updated recently (offset set ${timeDeltaFormatter.format(timeFromLastChangeToOffset / 1000 / 60)} min ago at ${this.dateOfLastTempOffsetChange})`);
       return;
     }
 
@@ -115,7 +118,7 @@ export class Thermostat {
     const lastStartTime: Date = new Date(this.state.demand_status?.last_start * 1000) || null;
     const timeSinceHVACLastStarted: any = (currentDate.valueOf() - lastStartTime?.valueOf()) || assumedDuration;
     if ((timeSinceHVACLastStarted) < 15 * 60 * 1000) {
-      console.log(`Offset not changed since HVAC started recently (offset set ${timeSinceHVACLastStarted / 1000 / 60} min ago at ${lastStartTime})`);
+      console.log(`Offset not changed since HVAC started recently (offset set ${timeDeltaFormatter.format(timeSinceHVACLastStarted / 1000 / 60)} min ago at ${lastStartTime})`);
       return;
     }
 
@@ -124,25 +127,26 @@ export class Thermostat {
     const lastEndTime: Date = this.state.demand_status?.last_end || null;
     const timeSinceHVACLastEnded: any = (currentDate.valueOf() - lastEndTime?.valueOf()) || assumedDuration;
     if ((timeSinceHVACLastEnded) < 10 * 60 * 1000) {
-      console.log(`Offset not changed since HVAC ended recently (offset set ${timeSinceHVACLastEnded / 1000 / 60} min ago at ${lastEndTime})`);
+      console.log(`Offset not changed since HVAC ended recently (offset set ${timeDeltaFormatter.format(timeSinceHVACLastEnded / 1000 / 60)} min ago at ${lastEndTime})`);
       return;
     }
 
-    console.log(`Changed offset to ${temperatureDifferenceRounded}; temp at sensor - ${sensorTemperature}, temp at the thermostat - ${currentTempAtThermostatSensor}.`);
-    this.setThermostatOffset(temperatureDifferenceRounded);
+    console.log(`Changed offset to ${temperatureDifferenceRoundedMaxMin}; temp at sensor - ${sensorTemperature}, temp at the thermostat - ${currentTempAtThermostatSensor}.`);
+    this.setThermostatOffset(temperatureDifferenceRoundedMaxMin);
   }
 
   async setThermostatOffset(offset: number) {
+    const offsetMinMax = Math.min(5, Math.max(-5, offset));
     await this.socket.emit('set_temp_offset', {
       icd_id: this.icd_id,
-      value: offset,
+      value: offsetMinMax,
     });
     // eslint-disable-next-line max-len
     // update the internal state just in case we don't get a response back before attempting the next update
     // TODO - really do state management and check for failures
     this.dateOfLastTempOffsetChange = new Date();
     this.state.display_temp = this.thermostatSensor_temp + offset;
-    this.state.temp_offset = offset;
+    this.state.temp_offset = offsetMinMax;
   }
 
   get circulatingFanOn(): boolean {
