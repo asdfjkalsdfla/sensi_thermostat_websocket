@@ -103,14 +103,18 @@ const setToRemoteThermostatTempContinuously = async () => {
 
 const setToRemoteThermostatTemp = async () => {
   if (isWorkingTime()) return; // don't use this during working hours
-  const tempResponse = await globalThis.fetch(REMOTE_TEMP_ADDRESS);
-  if (!tempResponse.ok) {
-    return;
+  try {
+    const tempResponse = await globalThis.fetch(REMOTE_TEMP_ADDRESS);
+    if (!tempResponse.ok) {
+      return;
+    }
+    const data: any = await tempResponse.json();
+    thermostats.forEach((thermostat) => {
+      thermostat.setThermostatTempToSensorTemp(data.temperatureF);
+    });
+  } catch (ex) {
+    console.log(ex);
   }
-  const data: any = await tempResponse.json();
-  thermostats.forEach((thermostat) => {
-    thermostat.setThermostatTempToSensorTemp(data.temperatureF);
-  });
 };
 
 const manageCirculatingFanSchedule = async () => {
@@ -159,7 +163,7 @@ const main = async () => {
   tempFetcher.start();
   tempFetcher.on('tempChange', (temp) => { gaugeTemp.set({ room: 'outside' }, temp); });
 
-  manageCirculatingFanSchedule();
+  // manageCirculatingFanSchedule();
   setToRemoteThermostatTempContinuously();
 };
 
