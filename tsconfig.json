@@ -1,6 +1,8 @@
 {
   "project": "sensi_thermostat_websocket",
   "compilerOptions": {
+    "emitDeclarationOnly": true,
+    "declaration": true,
     "module": "es2020",
     "target": "es2021",
     "moduleResolution": "node",
