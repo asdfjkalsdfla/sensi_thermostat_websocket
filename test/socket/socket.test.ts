@@ -1,6 +1,6 @@
 import { describe, beforeEach, afterEach, test, expect, vi } from 'vitest';
 
-import faker from 'faker';
+import { faker } from '@faker-js/faker';
 
 // authorization mock
 import { Authorization } from '../../src/authorization.js';

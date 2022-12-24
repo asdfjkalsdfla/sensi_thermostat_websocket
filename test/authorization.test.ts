@@ -1,5 +1,5 @@
 import { describe, test, expect, beforeEach, afterEach, vi } from 'vitest';
-import faker from 'faker';
+import { faker } from '@faker-js/faker';
 import { MockAgent, setGlobalDispatcher } from 'undici';
 import type { Interceptable, MockInterceptor } from 'undici/types/mock-interceptor';
 // import { rest } from 'msw';

@@ -1,9 +1,10 @@
+/* eslint-disable max-classes-per-file */
 import { SensiOAuthResponse } from './types/types.js';
 import * as config from './config.js';
 // import axios from 'axios';
 
 class ResponseError extends Error {
-  data: any
+  data: any;
 }
 
 export class Authorization {
