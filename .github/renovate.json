@@ -1,9 +1,7 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:base"
-  ],
-  "dependencyDashboard": false,
+  "extends": ["config:base"],
+  "dependencyDashboard": true,
   "packageRules": [
     {
       "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
@@ -14,6 +12,7 @@
     "enabled": true,
     "automerge": true
   },
+  "ignoreDeps": ["socket.io-client"],
   "timezone": "America/New_York",
   "schedule": "every weekend"
 }
