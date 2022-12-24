@@ -5,7 +5,7 @@ import faker from 'faker';
 // authorization mock
 import { Authorization } from '../../src/authorization.js';
 
-const accessToken = faker.random.uuid();
+const accessToken = faker.datatype.uuid();
 const mockAuthorizationImplementation = {
   accessToken,
   login: vi.fn().mockResolvedValue(null),
@@ -36,8 +36,10 @@ const mockSocketIOObject = {
   close: vi.fn(),
   on: vi.fn()
 };
-const mockSocketIO = vi.fn(() => mockSocketIOObject);
-vi.mock('socket.io-client.default', () => mockSocketIO);
+const mockSocketIO = vi.fn(() => {
+  return mockSocketIOObject;
+});
+vi.mock('socket.io-client', () => ({ default: mockSocketIO }));
 
 // socket helper mock
 import { SocketHelper } from "../../src/socket/socket_helper.js"
@@ -55,6 +57,10 @@ describe('socket', () => {
     authorization = new Authorization(
       'testClientID', 'testClientSecret', 'testEmail', 'testPass'
     );
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
   });
 
   test('return socket connection if the socket is connected', async () => {
@@ -94,8 +100,6 @@ describe('socket', () => {
     await socketObject.startSocketConnection();
 
     const mockArgs: Array<2> = mockSocketIO.mock.calls[0];
-    console.log(mockSocketIO.mock.calls);
-    console.log(mockArgs);
     expect(mockArgs[0]).toBe(mockConfig.SOCKET_ENDPOINT);
     expect(mockArgs[1]).toEqual({
       transports: ['websocket'],
@@ -143,7 +147,7 @@ describe('socket', () => {
     await handler(error);
 
     const mockArgs: Array<2> = mockSocketIO.mock.calls[0];
-    expect(mockSocketIOObject.close).toHaveBeenCalledBefore(mockSocketIO);
+    expect(mockSocketIOObject.close).toHaveBeenCalledOnce();
     expect(mockArgs[0]).toBe(mockConfig.SOCKET_ENDPOINT);
     expect(mockArgs[1]).toEqual({
       transports: ['websocket'],
