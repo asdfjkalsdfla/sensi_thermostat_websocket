@@ -8,8 +8,8 @@ import type { Interceptable, MockInterceptor } from 'undici/types/mock-intercept
 const tokenEndpoint = 'https://test.georgiavotesvisual.com';
 const email = faker.internet.userName();
 const password = faker.internet.password();
-const clientId = faker.random.uuid();
-const clientSecret = faker.random.uuid();
+const clientId = faker.datatype.uuid();
+const clientSecret = faker.datatype.uuid();
 
 vi.mock('../src/config.js', () => ({
   TOKEN_ENDPOINT: tokenEndpoint
@@ -45,8 +45,8 @@ describe('authorization', () => {
     });
 
     test('call endpoint and return token', async () => {
-      const accessToken = faker.random.uuid();
-      const refreshToken = faker.random.uuid();
+      const accessToken = faker.datatype.uuid();
+      const refreshToken = faker.datatype.uuid();
       mockPool
         .intercept({
           path: genPath('/token'),
@@ -130,8 +130,8 @@ describe('authorization', () => {
   });
 
   describe('refreshAccessToken', () => {
-    const accessToken = faker.random.uuid();
-    const refreshToken = faker.random.uuid();
+    const accessToken = faker.datatype.uuid();
+    const refreshToken = faker.datatype.uuid();
     const response = { access_token: accessToken, refresh_token: refreshToken };
 
     beforeEach(async () => {
@@ -154,7 +154,7 @@ describe('authorization', () => {
     });
 
     test('refresh access token', async () => {
-      const newAccessToken = faker.random.uuid();
+      const newAccessToken = faker.datatype.uuid();
 
       // const tokenMock = nock(tokenEndpoint)
       //   .post('/token', {
