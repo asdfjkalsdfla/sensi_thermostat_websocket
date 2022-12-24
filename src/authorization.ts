@@ -40,14 +40,19 @@ export class Authorization {
           password: this.password
         })
       });
-
+      if (!response.ok) {
+        const err = new Error('Fetch failed');
+        const errorMessage = await response.json();
+        err.data = errorMessage;
+        throw err;
+      }
       const body: SensiOAuthResponse = await response.json();
       this.accessToken = body.access_token;
       this.refreshToken = body.refresh_token;
 
       return await Promise.resolve();
     } catch (err) {
-      return Promise.reject(err.response.data);
+      return Promise.reject(err.data);
     }
   }
 
@@ -67,11 +72,18 @@ export class Authorization {
         })
       });
 
+      if (!response.ok) {
+        const err = new Error('Fetch failed');
+        const errorMessage = await response.json();
+        err.data = errorMessage;
+        throw err;
+      }
+
       const body: SensiOAuthResponse = await response.json();
       this.accessToken = body.access_token;
       return await Promise.resolve();
     } catch (err) {
-      return Promise.reject(err.response.data);
+      return Promise.reject(err.data);
     }
   }
 

@@ -1,6 +1,6 @@
 import { describe, test, expect, beforeEach, afterEach, vi } from 'vitest';
 import faker from 'faker';
-import { File, FormData, MockAgent, setGlobalDispatcher } from 'undici';
+import { MockAgent, setGlobalDispatcher } from 'undici';
 import type { Interceptable, MockInterceptor } from 'undici/types/mock-interceptor';
 // import { rest } from 'msw';
 // import { setupServer } from 'msw/node';
@@ -26,7 +26,6 @@ const responseOptions: MockInterceptor.MockResponseOptions = {
 let mockAgent: MockAgent;
 let mockPool: Interceptable;
 
-
 describe('authorization', () => {
   let authorization;
 
@@ -49,7 +48,7 @@ describe('authorization', () => {
       const refreshToken = faker.datatype.uuid();
       mockPool
         .intercept({
-          path: genPath('/token'),
+          path: `${tokenEndpoint}/token`,
           method: 'POST',
         })
         .reply(() => ({
@@ -75,9 +74,16 @@ describe('authorization', () => {
 
     test('rejects with error if request fails', async () => {
       const error = faker.lorem.word();
-      // nock(tokenEndpoint)
-      //   .post('/token')
-      //   .reply(400, { error });
+      mockPool
+        .intercept({
+          path: `${tokenEndpoint}/token`,
+          method: 'POST',
+        })
+        .reply(() => ({
+          data: { error },
+          statusCode: 400,
+          responseOptions,
+        }));
 
       try {
         await authorization.login();
@@ -114,16 +120,22 @@ describe('authorization', () => {
       }
     ].forEach((testCase: { property: string, auth: Authorization }) => {
       test(`does not call login endpoint if ${testCase.property} is not set in the config`, async () => {
-        // const tokenNock = nock(tokenEndpoint)
-        //   .post('/token')
-        //   .reply(400, {});
+        mockPool
+          .intercept({
+            path: `${tokenEndpoint}/token`,
+            method: 'POST',
+          })
+          .reply(() => ({
+            data: {},
+            statusCode: 400,
+            responseOptions,
+          }));
 
         try {
           await testCase.auth.login();
           expect(true).toBeFalsy();
         } catch (err) {
           expect(err).toEqual(new Error('Missing one or more of the required environment variables: CLIENT_ID, CLIENT_SECRET, EMAIL, PASSWORD.'));
-          // expect(tokenNock.isDone()).toBeFalsy();
         }
       });
     });
@@ -135,49 +147,59 @@ describe('authorization', () => {
     const response = { access_token: accessToken, refresh_token: refreshToken };
 
     beforeEach(async () => {
-      // nock(tokenEndpoint)
-      //   .post('/token', {
-      //     grant_type: 'password',
-      //     client_id: clientId,
-      //     client_secret: clientSecret,
-      //     username: email,
-      //     password
-      //   })
-      //   .reply(200, response);
+      mockAgent = new MockAgent();
+      mockAgent.disableNetConnect(); // prevent actual requests to Discord
+      setGlobalDispatcher(mockAgent); // enabled the mock client to intercept requests
+      mockPool = mockAgent.get('https://test.georgiavotesvisual.com');
+      mockPool
+        .intercept({
+          path: `${tokenEndpoint}/token`,
+          method: 'POST',
+        })
+        .reply(() => ({
+          data: response,
+          statusCode: 200,
+          responseOptions,
+        }));
 
       authorization = new Authorization(
         clientId, clientSecret, email, password
       );
       await authorization.login();
-
-      // nock.cleanAll();
     });
 
     test('refresh access token', async () => {
       const newAccessToken = faker.datatype.uuid();
-
-      // const tokenMock = nock(tokenEndpoint)
-      //   .post('/token', {
-      //     grant_type: 'refresh_token',
-      //     client_id: clientId,
-      //     client_secret: clientSecret,
-      //     refresh_token: refreshToken
-      //   })
-      //   .reply(200, { access_token: newAccessToken });
+      mockPool
+        .intercept({
+          path: `${tokenEndpoint}/token`,
+          method: 'POST',
+        })
+        .reply(() => ({
+          data: { access_token: newAccessToken },
+          statusCode: 200,
+          responseOptions,
+        }));
 
       await authorization.refreshAccessToken();
 
       expect(authorization.accessToken).toBe(newAccessToken);
       expect(authorization.refreshToken).toBe(refreshToken);
-      // tokenMock.done();
     });
 
     test('rejects with error if statusCode is a 400', async () => {
       const error = faker.lorem.word();
-      // nock(tokenEndpoint)
-      //   .post('/token')
-      //   .reply(400, { error });
-
+      mockPool
+        .intercept({
+          path: `${tokenEndpoint}/token`,
+          method: 'POST',
+        })
+        .reply(() => ({
+          data: { error },
+          statusCode: 400,
+          responseOptions,
+        }));
+        
       try {
         await authorization.refreshAccessToken();
         expect(true).toBeFalsy();
