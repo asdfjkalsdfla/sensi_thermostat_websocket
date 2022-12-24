@@ -38,7 +38,7 @@
   "scripts": {
     "start": "ts-node-esm src/index.ts",
     "build": "./esbuild.cjs",
-    "check": "tsc",
+    "check": "tsc -p tsconfig.build.json",
     "test": "vitest",
     "lint": "eslint src/**"
   },

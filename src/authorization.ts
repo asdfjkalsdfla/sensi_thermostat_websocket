@@ -2,6 +2,10 @@ import { SensiOAuthResponse } from './types/types.js';
 import * as config from './config.js';
 // import axios from 'axios';
 
+class ResponseError extends Error {
+  data: any
+}
+
 export class Authorization {
   private clientId: string;
   private clientSecret: string;
@@ -41,7 +45,7 @@ export class Authorization {
         })
       });
       if (!response.ok) {
-        const err = new Error('Fetch failed');
+        const err = new ResponseError('Fetch failed');
         const errorMessage = await response.json();
         err.data = errorMessage;
         throw err;
@@ -73,7 +77,7 @@ export class Authorization {
       });
 
       if (!response.ok) {
-        const err = new Error('Fetch failed');
+        const err = new ResponseError('Fetch failed');
         const errorMessage = await response.json();
         err.data = errorMessage;
         throw err;
