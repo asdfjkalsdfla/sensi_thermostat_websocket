@@ -79,7 +79,7 @@ const readTemperatureSensorDataContinuously = async (sensor) => {
     // console.log(remoteSensorData.temperatureF);
     // basic check for outlier data
     // eslint-disable-next-line max-len
-    if ((remoteSensorData.temperatureF < 95) && (remoteSensorData.temperatureF > 45)) tempReadings.push(remoteSensorData.temperatureF);
+    if ((remoteSensorData.temperatureF < 110) && (remoteSensorData.temperatureF > 10)) tempReadings.push(remoteSensorData.temperatureF);
     // after 4 temp readings, take the average and then perform the offset
     if (tempReadings.length > 4) {
       const avgTemps = average(tempReadings);
