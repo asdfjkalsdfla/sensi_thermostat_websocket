@@ -1,8 +1,11 @@
 import { describe, test, expect, beforeEach, afterEach, vi } from 'vitest';
 import faker from 'faker';
-import nock from 'nock';
+import { File, FormData, MockAgent, setGlobalDispatcher } from 'undici';
+import type { Interceptable, MockInterceptor } from 'undici/types/mock-interceptor';
+// import { rest } from 'msw';
+// import { setupServer } from 'msw/node';
 
-const tokenEndpoint = faker.internet.url();
+const tokenEndpoint = 'https://test.georgiavotesvisual.com';
 const email = faker.internet.userName();
 const password = faker.internet.password();
 const clientId = faker.random.uuid();
@@ -14,46 +17,67 @@ vi.mock('../src/config.js', () => ({
 
 import { Authorization } from '../src/authorization.js';
 
+const responseOptions: MockInterceptor.MockResponseOptions = {
+  headers: {
+    'content-type': 'application/json',
+  },
+};
+
+let mockAgent: MockAgent;
+let mockPool: Interceptable;
+
+
 describe('authorization', () => {
   let authorization;
 
   describe('login', () => {
     beforeEach(() => {
+      mockAgent = new MockAgent();
+      mockAgent.disableNetConnect(); // prevent actual requests to Discord
+      setGlobalDispatcher(mockAgent); // enabled the mock client to intercept requests
+      mockPool = mockAgent.get('https://test.georgiavotesvisual.com');
       authorization = new Authorization(
         clientId, clientSecret, email, password
       );
     });
-    afterEach(() => {
-      nock.cleanAll();
+    afterEach(async () => {
+      await mockAgent.close();
     });
 
     test('call endpoint and return token', async () => {
       const accessToken = faker.random.uuid();
       const refreshToken = faker.random.uuid();
-      const response = { access_token: accessToken, refresh_token: refreshToken };
-
-      const tokenMock = nock(tokenEndpoint)
-        .post('/token', {
-          grant_type: 'password',
-          client_id: clientId,
-          client_secret: clientSecret,
-          username: email,
-          password
+      mockPool
+        .intercept({
+          path: genPath('/token'),
+          method: 'POST',
         })
-        .reply(200, response);
-
+        .reply(() => ({
+          data: { access_token: accessToken, refresh_token: refreshToken },
+          statusCode: 200,
+          responseOptions,
+        }));
+      // const server = setupServer(
+      //   rest.post(`${tokenEndpoint}/token`, (req, res, ctx) => {
+      //     return res(ctx.json({ access_token: accessToken, refresh_token: refreshToken }))
+      //   }),
+      // )
+      // server.listen({
+      //   onUnhandledRequest(req) {
+      //     console.error('Found an unhandled %s request to %s', req.method, req.url.href,)
+      //   },
+      // });
       await authorization.login();
 
       expect(authorization.accessToken).toBe(accessToken);
       expect(authorization.refreshToken).toBe(refreshToken);
-      tokenMock.done();
     });
 
     test('rejects with error if request fails', async () => {
       const error = faker.lorem.word();
-      nock(tokenEndpoint)
-        .post('/token')
-        .reply(400, { error });
+      // nock(tokenEndpoint)
+      //   .post('/token')
+      //   .reply(400, { error });
 
       try {
         await authorization.login();
@@ -90,16 +114,16 @@ describe('authorization', () => {
       }
     ].forEach((testCase: { property: string, auth: Authorization }) => {
       test(`does not call login endpoint if ${testCase.property} is not set in the config`, async () => {
-        const tokenNock = nock(tokenEndpoint)
-          .post('/token')
-          .reply(400, {});
+        // const tokenNock = nock(tokenEndpoint)
+        //   .post('/token')
+        //   .reply(400, {});
 
         try {
           await testCase.auth.login();
           expect(true).toBeFalsy();
         } catch (err) {
           expect(err).toEqual(new Error('Missing one or more of the required environment variables: CLIENT_ID, CLIENT_SECRET, EMAIL, PASSWORD.'));
-          expect(tokenNock.isDone()).toBeFalsy();
+          // expect(tokenNock.isDone()).toBeFalsy();
         }
       });
     });
@@ -111,48 +135,48 @@ describe('authorization', () => {
     const response = { access_token: accessToken, refresh_token: refreshToken };
 
     beforeEach(async () => {
-      nock(tokenEndpoint)
-        .post('/token', {
-          grant_type: 'password',
-          client_id: clientId,
-          client_secret: clientSecret,
-          username: email,
-          password
-        })
-        .reply(200, response);
+      // nock(tokenEndpoint)
+      //   .post('/token', {
+      //     grant_type: 'password',
+      //     client_id: clientId,
+      //     client_secret: clientSecret,
+      //     username: email,
+      //     password
+      //   })
+      //   .reply(200, response);
 
       authorization = new Authorization(
         clientId, clientSecret, email, password
       );
       await authorization.login();
 
-      nock.cleanAll();
+      // nock.cleanAll();
     });
 
     test('refresh access token', async () => {
       const newAccessToken = faker.random.uuid();
 
-      const tokenMock = nock(tokenEndpoint)
-        .post('/token', {
-          grant_type: 'refresh_token',
-          client_id: clientId,
-          client_secret: clientSecret,
-          refresh_token: refreshToken
-        })
-        .reply(200, { access_token: newAccessToken });
+      // const tokenMock = nock(tokenEndpoint)
+      //   .post('/token', {
+      //     grant_type: 'refresh_token',
+      //     client_id: clientId,
+      //     client_secret: clientSecret,
+      //     refresh_token: refreshToken
+      //   })
+      //   .reply(200, { access_token: newAccessToken });
 
       await authorization.refreshAccessToken();
 
       expect(authorization.accessToken).toBe(newAccessToken);
       expect(authorization.refreshToken).toBe(refreshToken);
-      tokenMock.done();
+      // tokenMock.done();
     });
 
     test('rejects with error if statusCode is a 400', async () => {
       const error = faker.lorem.word();
-      nock(tokenEndpoint)
-        .post('/token')
-        .reply(400, { error });
+      // nock(tokenEndpoint)
+      //   .post('/token')
+      //   .reply(400, { error });
 
       try {
         await authorization.refreshAccessToken();
