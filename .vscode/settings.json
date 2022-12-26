@@ -1,10 +1,24 @@
 {
-    "cSpell.words": [
-        "auxheat",
-        "fullchain",
-        "HVAC",
-        "letsencrypt",
-        "privkey",
-        "Sensi"
-    ]
+  "cSpell.words": [
+    "abcdefef",
+    "auxheat",
+    "bitfield",
+    "deadband",
+    "fullchain",
+    "geofencing",
+    "HVAC",
+    "letsencrypt",
+    "privkey",
+    "Sensi",
+    "setpoint",
+    "bitfield"
+  ],
+  "[typescript]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+  },
+  "eslint.validate": ["javascript", "typescript", "html"],
+  "eslint.format.enable": true,
+  "eslint.options": {
+    "overrideConfigFile": "./.eslintrc.cjs"
+  }
 }

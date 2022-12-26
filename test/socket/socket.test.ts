@@ -1,4 +1,6 @@
-import { describe, beforeEach, afterEach, test, expect, vi } from 'vitest';
+import {
+  describe, beforeEach, afterEach, test, expect, vi
+} from 'vitest';
 
 import { faker } from '@faker-js/faker';
 
@@ -13,15 +15,11 @@ const mockAuthorizationImplementation = {
   isRefreshTokenAvailable: vi.fn()
 };
 
-vi.mock('../../src/authorization.js', () => {
-  return {
-    Authorization: vi.fn().mockImplementation(() => {
-      return {
-        ...mockAuthorizationImplementation
-      }
-    })
-  }
-})
+vi.mock('../../src/authorization.js', () => ({
+  Authorization: vi.fn().mockImplementation(() => ({
+    ...mockAuthorizationImplementation
+  }))
+}));
 
 // config mock
 // let mockEndpoint = faker.internet.url();
@@ -36,13 +34,12 @@ const mockSocketIOObject = {
   close: vi.fn(),
   on: vi.fn()
 };
-const mockSocketIO = vi.fn(() => {
-  return mockSocketIOObject;
-});
+const mockSocketIO = vi.fn(() => mockSocketIOObject);
 vi.mock('socket.io-client', () => ({ default: mockSocketIO }));
 
 // socket helper mock
-import { SocketHelper } from "../../src/socket/socket_helper.js"
+import { SocketHelper } from '../../src/socket/socket_helper.js';
+
 vi.mock('../../src/socket/socket_helper.js');
 SocketHelper.stateHandler = vi.fn().mockReturnValue('worked');
 SocketHelper.disconnectHandler = vi.fn().mockReturnValue('worked');

@@ -1,4 +1,6 @@
-import { describe, test, expect, vi } from 'vitest';
+import {
+  describe, test, expect, vi
+} from 'vitest';
 import { SocketHelper } from '../../src/socket/socket_helper.js';
 
 describe('socket_helper', () => {

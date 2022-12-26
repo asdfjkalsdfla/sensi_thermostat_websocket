@@ -1,4 +1,6 @@
-import { describe, test, expect, beforeEach, afterEach, vi } from 'vitest';
+import {
+  describe, test, expect, beforeEach, afterEach, vi
+} from 'vitest';
 import { faker } from '@faker-js/faker';
 import { MockAgent, setGlobalDispatcher } from 'undici';
 import type { Interceptable, MockInterceptor } from 'undici/types/mock-interceptor';
@@ -199,7 +201,7 @@ describe('authorization', () => {
           statusCode: 400,
           responseOptions,
         }));
-        
+
       try {
         await authorization.refreshAccessToken();
         expect(true).toBeFalsy();
