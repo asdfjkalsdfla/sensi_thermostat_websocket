@@ -17,10 +17,10 @@ export class Thermostat {
       this.icd_id = data.icd_id;
     }
     if (data.state !== undefined) {
-      this.state = data.state;
+      this.state = { ...data.state };
     }
     if (data.registration !== undefined) {
-      this.registration = data.registration;
+      this.registration = { ...data.registration };
     }
     if (socket) this.socket = socket;
   }
@@ -148,6 +148,7 @@ export class Thermostat {
   }
 
   async setThermostatOffset(offset: number) {
+    console.log('setting offset');
     const offsetMinMax = Math.min(5, Math.max(-5, offset));
     await this.socket.emit('set_temp_offset', {
       icd_id: this.icd_id,
