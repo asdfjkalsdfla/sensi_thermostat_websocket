@@ -157,7 +157,7 @@ export class Thermostat {
     // update the internal state just in case we don't get a response back before attempting the next update
     // TODO - really do state management and check for failures
     this.dateOfLastTempOffsetChange = new Date();
-    this.state.display_temp = this.thermostatSensor_temp + offset;
+    this.state.display_temp = this.thermostatSensor_temp + offsetMinMax;
     this.state.temp_offset = offsetMinMax;
   }
 
