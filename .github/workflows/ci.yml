@@ -14,5 +14,16 @@ jobs:
       - run: npm audit
       - run: npm ci
       - run: npm run build
+      - name: archive build outputs
+        uses: actions/upload-artifact@v3
+        with:
+          name: build
+          path: build/
       - run: npm run check
       - run: npm run test
+      - run: npm run coverage
+      - name: archive test coverage report
+        uses: actions/upload-artifact@v3
+        with:
+          name: testCoverage
+          path: test/coverageReports/

@@ -4,6 +4,7 @@
 node_modules
 coverage/
 build/
+test/coverageReports
 
 .env
 nest-devi*.json
