@@ -31,7 +31,7 @@ export const nestThermostatListener = async (
 
     // const timeStamp = new Date(messageData.timestamp);
 
-    console.log(JSON.stringify(messageData.resourceUpdate));
+    console.debug(JSON.stringify(messageData.resourceUpdate));
     const tempC = messageData?.resourceUpdate?.traits['sdm.devices.traits.Temperature']?.ambientTemperatureCelsius;
     if (tempC) {
       const tempF = tempC * 1.8 + 32;

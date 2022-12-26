@@ -2,8 +2,8 @@ export class SocketHelper {
   static stateHandler(data: any): void {
     const datetime = new Date().toLocaleString().replace(',', '');
 
-    console.log('received data at', datetime);
-    console.log(JSON.stringify(data));
+    console.debug('received data at', datetime);
+    console.debug(JSON.stringify(data));
   }
 
   static disconnectHandler(err): void {
