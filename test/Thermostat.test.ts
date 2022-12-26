@@ -579,7 +579,7 @@ describe('remote sensor matching - ensure in safer periods', () => {
 
     // start need right before HVAC stops
     date = new Date(
-      2022, 11, 1, 13, 17, 0, 0
+      2022, 11, 1, 13, 35, 0, 0
     );
     vi.setSystemTime(date);
     vi.resetAllMocks(); // reset mock to clear previous spy call
@@ -593,7 +593,7 @@ describe('remote sensor matching - ensure in safer periods', () => {
 
     // HVAC turns off
     date = new Date(
-      2022, 11, 1, 13, 18, 0, 0
+      2022, 11, 1, 13, 36, 0, 0
     );
     vi.setSystemTime(date);
     const statusUpdateOff = {
@@ -606,7 +606,7 @@ describe('remote sensor matching - ensure in safer periods', () => {
 
     // second need but HVAC has stopped
     date = new Date(
-      2022, 11, 1, 13, 21, 0, 0
+      2022, 11, 1, 13, 37, 0, 0
     );
     vi.setSystemTime(date);
     await thermostat.setThermostatTempToSensorTemp(sensorTemp);
@@ -618,7 +618,7 @@ describe('remote sensor matching - ensure in safer periods', () => {
 
     // finally updates because  HVAC has been stopped a while
     date = new Date(
-      2022, 11, 1, 13, 31, 0, 0
+      2022, 11, 1, 13, 47, 0, 0
     );
     vi.setSystemTime(date);
     await thermostat.setThermostatTempToSensorTemp(sensorTemp);
