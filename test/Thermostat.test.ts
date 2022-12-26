@@ -272,4 +272,34 @@ describe('temp setting offset', () => {
     expect(thermostat.thermostat_temp).toEqual(69);
     expect(thermostat.thermostatSensor_temp).toEqual(72);
   });
+
+  test('set offset less than min value', async () => {
+    // start condition
+    expect(thermostat.thermostatSensor_temp).toEqual(72);
+
+    // send update
+    await thermostat.setThermostatOffset(-7.0);
+    expect(socket.emit).toHaveBeenCalled();
+
+    // state after emit
+    expect(thermostat.state.display_temp).toEqual(67);
+    expect(thermostat.thermostat_temp).toEqual(67);
+    expect(thermostat.thermostatSensor_temp).toEqual(72);
+    expect(thermostat.state.temp_offset).toEqual(-5);
+  });
+
+  test('set offset less than max value', async () => {
+    // start condition
+    expect(thermostat.thermostatSensor_temp).toEqual(72);
+
+    // send update
+    await thermostat.setThermostatOffset(9.0);
+    expect(socket.emit).toHaveBeenCalled();
+
+    // state after emit
+    expect(thermostat.state.display_temp).toEqual(77);
+    expect(thermostat.thermostat_temp).toEqual(77);
+    expect(thermostat.thermostatSensor_temp).toEqual(72);
+    expect(thermostat.state.temp_offset).toEqual(5);
+  });
 });
