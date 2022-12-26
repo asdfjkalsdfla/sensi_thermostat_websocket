@@ -9,7 +9,7 @@ esbuild.build({
   entryPoints: ['./src/index.ts'],
   outdir: 'build/',
   bundle: true,
-  minify: true,
+  minify: false,
   platform: 'node',
   format: 'esm',
   sourcemap: true,
