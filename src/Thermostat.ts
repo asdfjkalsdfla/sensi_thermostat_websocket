@@ -2,7 +2,7 @@ import _ from 'lodash';
 import { Socket } from './socket/socket.js';
 import { Registration } from './types/types.js';
 
-const timeDeltaFormatter = new Intl.NumberFormat('en-US', {  minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const timeDeltaFormatter = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
 export class Thermostat {
   readonly icd_id: string;
@@ -10,6 +10,7 @@ export class Thermostat {
   registration: Registration;
   socket: Socket = null;
   dateOfLastTempOffsetChange: Date;
+  dateSinceOffsetNeedDetected: Date;
 
   constructor(socket: Socket, data: any) {
     if (data.icd_id !== undefined) {
@@ -100,14 +101,17 @@ export class Thermostat {
     // CHECK: Only change the temp if the difference is big enough
     // and check that we're not just on the rounding point where we can see oscillation due to random noise
     if (absChangeInTempOffset <= 0.5 || Math.abs(temperatureDifference - currentTempOffset) <= (1 / (2 * scale) + 0.1)) {
+      this.dateSinceOffsetNeedDetected = null; // if we no longer need the offset, set the offset need detection date to null
       return;
     }
 
+    if (!this.dateSinceOffsetNeedDetected) this.dateSinceOffsetNeedDetected = new Date(); // set the offset needed date if one isn't set
+
     // CHECK: Ensure the temp isn't updated all the time
-    // when the last temp offset was less than 5 minutes ago, don't update again
+    // when the last temp offset was less than 10 minutes ago, don't update again
     const currentDate: Date = new Date();
     const assumedDuration = 10 * 60 * 1000;
-    const timeFromLastChangeToOffset: any = (currentDate.valueOf() - this.dateOfLastTempOffsetChange?.valueOf()) || assumedDuration;
+    const timeFromLastChangeToOffset: number = (currentDate.valueOf() - this.dateOfLastTempOffsetChange?.valueOf()) || assumedDuration;
     if ((timeFromLastChangeToOffset) < 5 * 60 * 1000) {
       console.log(`Offset not changed since it was updated recently (offset set ${timeDeltaFormatter.format(timeFromLastChangeToOffset / 1000 / 60)} min ago at ${this.dateOfLastTempOffsetChange})`);
       return;
@@ -116,18 +120,26 @@ export class Thermostat {
     // CHECK: Ensure the offset isn't changed just after the hvac starts to prevent short cycling
     // Currently set to 10 minutes from start
     const lastStartTime: Date = new Date(this.state.demand_status?.last_start * 1000) || null;
-    const timeSinceHVACLastStarted: any = (currentDate.valueOf() - lastStartTime?.valueOf()) || assumedDuration;
+    const timeSinceHVACLastStarted: number = (currentDate.valueOf() - lastStartTime?.valueOf()) || assumedDuration;
     if ((timeSinceHVACLastStarted) < 15 * 60 * 1000) {
-      console.log(`Offset not changed since HVAC started recently (offset set ${timeDeltaFormatter.format(timeSinceHVACLastStarted / 1000 / 60)} min ago at ${lastStartTime})`);
+      console.log(`Offset not changed since HVAC started recently (HVAC started ${timeDeltaFormatter.format(timeSinceHVACLastStarted / 1000 / 60)} min ago at ${lastStartTime})`);
       return;
     }
 
     // CHECK: Ensure the offset isn't changed just after the hvac stops to prevent short cycling
-    // Currently set to 5 minutes from the end time
+    // Currently set to 10 minutes from the end time
     const lastEndTime: Date = this.state.demand_status?.last_end || null;
-    const timeSinceHVACLastEnded: any = (currentDate.valueOf() - lastEndTime?.valueOf()) || assumedDuration;
+    const timeSinceHVACLastEnded: number = (currentDate.valueOf() - lastEndTime?.valueOf()) || assumedDuration;
     if ((timeSinceHVACLastEnded) < 10 * 60 * 1000) {
-      console.log(`Offset not changed since HVAC ended recently (offset set ${timeDeltaFormatter.format(timeSinceHVACLastEnded / 1000 / 60)} min ago at ${lastEndTime})`);
+      console.log(`Offset not changed since HVAC ended recently (HVAC stopped ${timeDeltaFormatter.format(timeSinceHVACLastEnded / 1000 / 60)} min ago at ${lastEndTime})`);
+      return;
+    }
+
+    // CHECK: Ensure we've needed the offset for at last x minutes; this prevents changing this right before we get a new tempature reading from the thermostat
+    // Currently set to 3 minutes
+    const durationOfOffsetNeedDetected: number = (currentDate.valueOf() - this.dateSinceOffsetNeedDetected?.valueOf()) || 0;
+    if ((durationOfOffsetNeedDetected) < 3 * 60 * 1000) {
+      console.log(`Offset not changed since the need was recently detected (need detected ${timeDeltaFormatter.format(durationOfOffsetNeedDetected / 1000 / 60)} min ago at ${this.dateSinceOffsetNeedDetected})`);
       return;
     }
 
