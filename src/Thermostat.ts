@@ -18,6 +18,7 @@ export class Thermostat {
     }
     if (data.state !== undefined) {
       this.state = { ...data.state };
+      this.state.demand_status = { ...data.state.demand_status };
     }
     if (data.registration !== undefined) {
       this.registration = { ...data.registration };
@@ -80,7 +81,7 @@ export class Thermostat {
     this.state = newState;
   }
 
-  setThermostatTempToSensorTemp(sensorTemperature: number) {
+  async setThermostatTempToSensorTemp(sensorTemperature: number) {
     // CALCULATE: Determine the offset to apply
     const currentTempAtThermostatSensor = this.thermostatSensor_temp;
     const temperatureDifference = sensorTemperature - currentTempAtThermostatSensor;
@@ -144,7 +145,8 @@ export class Thermostat {
     }
 
     console.log(`Changed offset to ${temperatureDifferenceRoundedMaxMin}; temp at sensor - ${sensorTemperature}, temp at the thermostat - ${currentTempAtThermostatSensor}.`);
-    this.setThermostatOffset(temperatureDifferenceRoundedMaxMin);
+    await this.setThermostatOffset(temperatureDifferenceRoundedMaxMin);
+    this.dateSinceOffsetNeedDetected = null; // reset the need date after setting temp
   }
 
   async setThermostatOffset(offset: number) {

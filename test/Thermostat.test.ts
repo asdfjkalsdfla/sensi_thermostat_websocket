@@ -1,5 +1,5 @@
 import {
-  describe, test, beforeEach, expect, vi
+  describe, test, beforeEach, afterEach, expect, vi
 } from 'vitest';
 import { Socket } from '../src/socket/socket.js';
 import { Authorization } from '../src/authorization.js';
@@ -7,6 +7,11 @@ import { Thermostat } from '../src/Thermostat.js';
 
 vi.mock('../src/socket/socket.js');
 vi.mock('../src/authorization.js');
+
+const auth = new Authorization(
+  '', '', '', ''
+);
+const socket = new Socket(auth);
 
 const standardStartMessage = {
   icd_id: '0a-50-30-62-eb-18-ff-ff',
@@ -85,12 +90,11 @@ describe('state updates', () => {
     demand_status: { last_start: 1649628642, cool: 100, cool_stage: 1 }, relay_status: { y: 'on' }, wifi_connection_quality: 44, control: {}, humidity_control: { status: 'none' }
   };
   beforeEach(() => {
-    const auth = new Authorization(
-      '', '', '', ''
-    );
-    const socket = new Socket(auth);
     thermostat = new Thermostat(socket, {});
     thermostat.updateState(startState);
+  });
+  afterEach(() => {
+    vi.resetAllMocks();
   });
   test('single update with no existing values', () => {
     expect(thermostat.state).toEqual(startState);
@@ -126,14 +130,11 @@ describe('state updates', () => {
 
 describe('indicator of running state', () => {
   let thermostat;
-  let auth;
-  let socket;
   beforeEach(() => {
-    auth = new Authorization(
-      '', '', '', ''
-    );
-    socket = new Socket(auth);
     thermostat = new Thermostat(socket, standardStartMessage);
+  });
+  afterEach(() => {
+    vi.resetAllMocks();
   });
   test('nothing running', () => {
     expect(thermostat.is_running_cool).toEqual(false);
@@ -187,14 +188,11 @@ describe('indicator of running state', () => {
 
 describe('temperature updates', () => {
   let thermostat;
-  let auth;
-  let socket;
   beforeEach(() => {
-    auth = new Authorization(
-      '', '', '', ''
-    );
-    socket = new Socket(auth);
     thermostat = new Thermostat(socket, standardStartMessage);
+  });
+  afterEach(() => {
+    vi.resetAllMocks();
   });
   test('standard state', () => {
     expect(thermostat.thermostatSensor_temp).toEqual(75.5);
@@ -218,39 +216,36 @@ describe('temperature updates', () => {
 
 describe('temp setting offset', () => {
   let thermostat;
-  let auth;
-  let socket;
   beforeEach(() => {
-    auth = new Authorization(
-      '', '', '', ''
-    );
-    socket = new Socket(auth);
     thermostat = new Thermostat(socket, standardStartMessage);
   });
+  afterEach(() => {
+    vi.resetAllMocks();
+  });
   test('test temp after adding offset', async () => {
-    expect(thermostat.thermostatSensor_temp).toEqual(72);
-    expect(thermostat.thermostat_temp).toEqual(74);
+    expect(thermostat.thermostatSensor_temp).toEqual(75.5);
+    expect(thermostat.thermostat_temp).toEqual(75.5);
     await thermostat.setThermostatOffset(-2);
     expect(thermostat.state.temp_offset).toEqual(-2);
     // sensor hasn't changed but display temp has
-    expect(thermostat.thermostatSensor_temp).toEqual(72);
-    expect(thermostat.state.display_temp).toEqual(70);
-    expect(thermostat.thermostat_temp).toEqual(70);
+    expect(thermostat.thermostatSensor_temp).toEqual(75.5);
+    expect(thermostat.state.display_temp).toEqual(73.5);
+    expect(thermostat.thermostat_temp).toEqual(73.5);
     expect(socket.emit).toHaveBeenCalled();
   });
 
   test('test temp after adding offset and receiving an update', async () => {
     // start condition
-    expect(thermostat.thermostatSensor_temp).toEqual(72);
+    expect(thermostat.thermostatSensor_temp).toEqual(75.5);
 
     // send update
     await thermostat.setThermostatOffset(-3.0);
     expect(socket.emit).toHaveBeenCalled();
 
     // state after emit
-    expect(thermostat.state.display_temp).toEqual(69);
-    expect(thermostat.thermostat_temp).toEqual(69);
-    expect(thermostat.thermostatSensor_temp).toEqual(72);
+    expect(thermostat.state.display_temp).toEqual(72.5);
+    expect(thermostat.thermostat_temp).toEqual(72.5);
+    expect(thermostat.thermostatSensor_temp).toEqual(75.5);
 
     // response form server with update
     const updateStateWithOffset = {
@@ -268,38 +263,270 @@ describe('temp setting offset', () => {
     thermostat.update(updateStateWithOffset);
 
     // check state is good
-    expect(thermostat.state.display_temp).toEqual(69);
-    expect(thermostat.thermostat_temp).toEqual(69);
-    expect(thermostat.thermostatSensor_temp).toEqual(72);
+    expect(thermostat.state.display_temp).toEqual(72.5);
+    expect(thermostat.thermostat_temp).toEqual(72.5);
+    expect(thermostat.thermostatSensor_temp).toEqual(75.5);
   });
 
   test('set offset less than min value', async () => {
     // start condition
-    expect(thermostat.thermostatSensor_temp).toEqual(72);
+    expect(thermostat.thermostatSensor_temp).toEqual(75.5);
 
     // send update
     await thermostat.setThermostatOffset(-7.0);
     expect(socket.emit).toHaveBeenCalled();
 
     // state after emit
-    expect(thermostat.state.display_temp).toEqual(67);
-    expect(thermostat.thermostat_temp).toEqual(67);
-    expect(thermostat.thermostatSensor_temp).toEqual(72);
+    expect(thermostat.state.display_temp).toEqual(70.5);
+    expect(thermostat.thermostat_temp).toEqual(70.5);
+    expect(thermostat.thermostatSensor_temp).toEqual(75.5);
     expect(thermostat.state.temp_offset).toEqual(-5);
   });
 
   test('set offset less than max value', async () => {
     // start condition
-    expect(thermostat.thermostatSensor_temp).toEqual(72);
+    expect(thermostat.thermostatSensor_temp).toEqual(75.5);
 
     // send update
     await thermostat.setThermostatOffset(9.0);
     expect(socket.emit).toHaveBeenCalled();
 
     // state after emit
-    expect(thermostat.state.display_temp).toEqual(77);
-    expect(thermostat.thermostat_temp).toEqual(77);
-    expect(thermostat.thermostatSensor_temp).toEqual(72);
+    expect(thermostat.state.display_temp).toEqual(80.5);
+    expect(thermostat.thermostat_temp).toEqual(80.5);
+    expect(thermostat.thermostatSensor_temp).toEqual(75.5);
     expect(thermostat.state.temp_offset).toEqual(5);
+  });
+});
+
+describe('remote sensor matching', () => {
+  let thermostat;
+  beforeEach(() => {
+    vi.useFakeTimers();
+    const dateStart = new Date(
+      2022, 10, 1, 13, 0, 0, 0
+    );
+    vi.setSystemTime(dateStart);
+    thermostat = new Thermostat(socket, standardStartMessage);
+  });
+  afterEach(() => {
+    vi.resetAllMocks();
+    vi.useRealTimers();
+  });
+  test('basic offset', async () => {
+    // initial need detected
+    let date = new Date(
+      2022, 11, 1, 13, 0, 0, 0
+    );
+    vi.setSystemTime(date);
+    let sensorTemp = 73.5;
+    await thermostat.setThermostatTempToSensorTemp(sensorTemp);
+    expect(socket.emit).not.toHaveBeenCalled();
+    expect(thermostat.state.display_temp).toEqual(75.5);
+    expect(thermostat.thermostat_temp).toEqual(75.5);
+    expect(thermostat.thermostatSensor_temp).toEqual(75.5);
+    expect(thermostat.state.temp_offset).toEqual(0);
+
+    // need detected again - should update
+    date = new Date(
+      2022, 11, 1, 13, 3, 0, 0
+    );
+    vi.setSystemTime(date);
+    await thermostat.setThermostatTempToSensorTemp(sensorTemp);
+    expect(socket.emit).toHaveBeenCalled();
+    expect(thermostat.state.display_temp).toEqual(73.5);
+    expect(thermostat.thermostat_temp).toEqual(73.5);
+    expect(thermostat.thermostatSensor_temp).toEqual(75.5);
+    expect(thermostat.state.temp_offset).toEqual(-2);
+
+    // new need detected
+    date = new Date(
+      2022, 11, 1, 13, 6, 0, 0
+    );
+    vi.setSystemTime(date);
+    vi.resetAllMocks(); // reset mock to clear previous spy call
+    sensorTemp = 71.5;
+    await thermostat.setThermostatTempToSensorTemp(sensorTemp);
+    expect(socket.emit).not.toHaveBeenCalled();
+    expect(thermostat.state.display_temp).toEqual(73.5);
+    expect(thermostat.thermostat_temp).toEqual(73.5);
+    expect(thermostat.thermostatSensor_temp).toEqual(75.5);
+    expect(thermostat.state.temp_offset).toEqual(-2);
+  });
+  test('basic offset but read too soon', async () => {
+    // detect initial read
+    let date = new Date(
+      2022, 11, 1, 13, 0, 0, 0
+    );
+    vi.setSystemTime(date);
+    const sensorTemp = 73.5;
+    await thermostat.setThermostatTempToSensorTemp(sensorTemp);
+    expect(socket.emit).not.toHaveBeenCalled();
+    expect(thermostat.state.display_temp).toEqual(75.5);
+    expect(thermostat.thermostat_temp).toEqual(75.5);
+    expect(thermostat.thermostatSensor_temp).toEqual(75.5);
+    expect(thermostat.state.temp_offset).toEqual(0);
+
+    // Try again but too soon
+    date = new Date(
+      2022, 11, 1, 13, 2, 0, 0
+    );
+    vi.setSystemTime(date);
+    await thermostat.setThermostatTempToSensorTemp(sensorTemp);
+    expect(socket.emit).not.toHaveBeenCalled();
+    expect(thermostat.state.display_temp).toEqual(75.5);
+    expect(thermostat.thermostat_temp).toEqual(75.5);
+    expect(thermostat.thermostatSensor_temp).toEqual(75.5);
+    expect(thermostat.state.temp_offset).toEqual(0);
+
+    // Final read again
+    date = new Date(
+      2022, 11, 1, 13, 3, 0, 0
+    );
+    vi.setSystemTime(date);
+    await thermostat.setThermostatTempToSensorTemp(sensorTemp);
+    expect(socket.emit).toHaveBeenCalled();
+    expect(thermostat.state.display_temp).toEqual(73.5);
+    expect(thermostat.thermostat_temp).toEqual(73.5);
+    expect(thermostat.thermostatSensor_temp).toEqual(75.5);
+    expect(thermostat.state.temp_offset).toEqual(-2);
+  });
+  test('rounding for 1/2 degree offset', async () => {
+    const dateStart = new Date(
+      2022, 11, 1, 13, 0, 0, 0
+    );
+    vi.setSystemTime(dateStart);
+    const sensorTemp = 73.0;
+    await thermostat.setThermostatTempToSensorTemp(sensorTemp);
+    expect(socket.emit).not.toHaveBeenCalled();
+    expect(thermostat.state.display_temp).toEqual(75.5);
+    expect(thermostat.thermostat_temp).toEqual(75.5);
+    expect(thermostat.thermostatSensor_temp).toEqual(75.5);
+    expect(thermostat.state.temp_offset).toEqual(0);
+    const dateNextRead = new Date(
+      2022, 11, 1, 13, 3, 0, 0
+    );
+    vi.setSystemTime(dateNextRead);
+    await thermostat.setThermostatTempToSensorTemp(sensorTemp);
+    expect(socket.emit).toHaveBeenCalled();
+    expect(thermostat.state.display_temp).toEqual(73.5);
+    expect(thermostat.thermostat_temp).toEqual(73.5);
+    expect(thermostat.thermostatSensor_temp).toEqual(75.5);
+    expect(thermostat.state.temp_offset).toEqual(-2);
+  });
+  test('rounding for 1/2 degree offset', async () => {
+    const dateStart = new Date(
+      2022, 11, 1, 13, 0, 0, 0
+    );
+    vi.setSystemTime(dateStart);
+    const sensorTemp = 72.9;
+    await thermostat.setThermostatTempToSensorTemp(sensorTemp);
+    expect(socket.emit).not.toHaveBeenCalled();
+    expect(thermostat.state.display_temp).toEqual(75.5);
+    expect(thermostat.thermostat_temp).toEqual(75.5);
+    expect(thermostat.thermostatSensor_temp).toEqual(75.5);
+    expect(thermostat.state.temp_offset).toEqual(0);
+    const dateNextRead = new Date(
+      2022, 11, 1, 13, 3, 0, 0
+    );
+    vi.setSystemTime(dateNextRead);
+    await thermostat.setThermostatTempToSensorTemp(sensorTemp);
+    expect(socket.emit).toHaveBeenCalled();
+    expect(thermostat.state.display_temp).toEqual(72.5);
+    expect(thermostat.thermostat_temp).toEqual(72.5);
+    expect(thermostat.thermostatSensor_temp).toEqual(75.5);
+    expect(thermostat.state.temp_offset).toEqual(-3);
+  });
+  test('need then no need', async () => {
+    // Read with a need
+    let date = new Date(
+      2022, 11, 1, 13, 0, 0, 0
+    );
+    vi.setSystemTime(date);
+    let sensorTemp = 72.9;
+    await thermostat.setThermostatTempToSensorTemp(sensorTemp);
+    expect(socket.emit).not.toHaveBeenCalled();
+    expect(thermostat.state.display_temp).toEqual(75.5);
+    expect(thermostat.thermostat_temp).toEqual(75.5);
+    expect(thermostat.thermostatSensor_temp).toEqual(75.5);
+    expect(thermostat.state.temp_offset).toEqual(0);
+
+    // Update to no need
+    date = new Date(
+      2022, 11, 1, 13, 3, 0, 0
+    );
+    vi.setSystemTime(date);
+    sensorTemp = 75.5;
+    await thermostat.setThermostatTempToSensorTemp(sensorTemp);
+    expect(socket.emit).not.toHaveBeenCalled();
+    expect(thermostat.state.display_temp).toEqual(75.5);
+    expect(thermostat.thermostat_temp).toEqual(75.5);
+    expect(thermostat.thermostatSensor_temp).toEqual(75.5);
+    expect(thermostat.state.temp_offset).toEqual(0);
+
+    // Update to need again
+    date = new Date(
+      2022, 11, 1, 13, 6, 0, 0
+    );
+    vi.setSystemTime(date);
+    sensorTemp = 72.9;
+    await thermostat.setThermostatTempToSensorTemp(sensorTemp);
+    expect(socket.emit).not.toHaveBeenCalled();
+    expect(thermostat.state.display_temp).toEqual(75.5);
+    expect(thermostat.thermostat_temp).toEqual(75.5);
+    expect(thermostat.thermostatSensor_temp).toEqual(75.5);
+    expect(thermostat.state.temp_offset).toEqual(0);
+
+    // finally get an update
+    date = new Date(
+      2022, 11, 1, 13, 9, 0, 0
+    );
+    vi.setSystemTime(date);
+    await thermostat.setThermostatTempToSensorTemp(sensorTemp);
+    expect(socket.emit).toHaveBeenCalled();
+    expect(thermostat.state.display_temp).toEqual(72.5);
+    expect(thermostat.thermostat_temp).toEqual(72.5);
+    expect(thermostat.thermostatSensor_temp).toEqual(75.5);
+    expect(thermostat.state.temp_offset).toEqual(-3);
+  });
+  test('over max offset', async () => {
+    // initial call
+    let date = new Date(
+      2022, 11, 1, 13, 0, 0, 0
+    );
+    vi.setSystemTime(date);
+    const sensorTemp = 55;
+    await thermostat.setThermostatTempToSensorTemp(sensorTemp);
+    expect(socket.emit).not.toHaveBeenCalled();
+    expect(thermostat.state.display_temp).toEqual(75.5);
+    expect(thermostat.thermostat_temp).toEqual(75.5);
+    expect(thermostat.thermostatSensor_temp).toEqual(75.5);
+    expect(thermostat.state.temp_offset).toEqual(0);
+
+    // call after a few minutes
+    date = new Date(
+      2022, 11, 1, 13, 3, 0, 0
+    );
+    vi.setSystemTime(date);
+    await thermostat.setThermostatTempToSensorTemp(sensorTemp);
+    expect(socket.emit).toHaveBeenCalled();
+    expect(thermostat.state.display_temp).toEqual(70.5);
+    expect(thermostat.thermostat_temp).toEqual(70.5);
+    expect(thermostat.thermostatSensor_temp).toEqual(75.5);
+    expect(thermostat.state.temp_offset).toEqual(-5);
+
+    // call again and expect no need time
+    vi.resetAllMocks(); // reset mock to clear previous spy call
+    date = new Date(
+      2022, 11, 1, 13, 7, 0, 0
+    );
+    vi.setSystemTime(date);
+    await thermostat.setThermostatTempToSensorTemp(sensorTemp);
+    expect(socket.emit).not.toHaveBeenCalled();
+    expect(thermostat.dateSinceOffsetNeedDetected).toBeNull();
+    expect(thermostat.state.display_temp).toEqual(70.5);
+    expect(thermostat.thermostat_temp).toEqual(70.5);
+    expect(thermostat.thermostatSensor_temp).toEqual(75.5);
+    expect(thermostat.state.temp_offset).toEqual(-5);
   });
 });
