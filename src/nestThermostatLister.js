@@ -25,11 +25,9 @@ export const nestThermostatListener = async (
     if (!message.data) return; // make sure we have a message
     const messageDataJSON = message.data.toString();
     const messageData = JSON.parse(messageDataJSON);
-    if (!(messageData?.resourceUpdate?.name === NEST_THERMOSTAT_ID)) {
-      console.log('message is for other thermostat');
-      message.ack();
-      return;
-    }
+
+    // Bad way to do this, but hey...
+    const thermostatRoom = messageData?.resourceUpdate?.name === NEST_THERMOSTAT_ID ? 'main' : 'basement';
 
     // const timeStamp = new Date(messageData.timestamp);
 
@@ -37,8 +35,8 @@ export const nestThermostatListener = async (
     const tempC = messageData?.resourceUpdate?.traits['sdm.devices.traits.Temperature']?.ambientTemperatureCelsius;
     if (tempC) {
       const tempF = tempC * 1.8 + 32;
-      // console.log(`Main temp: ${tempF} at ${timeStamp.toLocaleString()}`);
-      gaugeTemp.set({ room: 'main_thermostat' }, tempF);
+      // console.log(`Temp: ${tempF} at ${timeStamp.toLocaleString()}`);
+      gaugeTemp.set({ room: thermostatRoom }, tempF);
     }
 
     const hvacRunningInfo = messageData?.resourceUpdate?.traits['sdm.devices.traits.ThermostatHvac']?.status;
@@ -53,14 +51,14 @@ export const nestThermostatListener = async (
       // console.log(`HVAC Cool Run: ${is_running_cool}`);
       // console.log(`HVAC Run: ${is_running}`);
 
-      gaugeHVACRunning.set({ level: 'main', mode: 'heat' }, +isRunningHeat);
-      gaugeHVACRunning.set({ level: 'main', mode: 'auxheat' }, +isRunningAuxHeat);
-      gaugeHVACRunning.set({ level: 'main', mode: 'cool' }, +isRunningCool);
-      gaugeHVACRunning.set({ level: 'main', mode: 'system' }, +isRunning);
+      gaugeHVACRunning.set({ level: thermostatRoom, mode: 'heat' }, +isRunningHeat);
+      gaugeHVACRunning.set({ level: thermostatRoom, mode: 'auxheat' }, +isRunningAuxHeat);
+      gaugeHVACRunning.set({ level: thermostatRoom, mode: 'cool' }, +isRunningCool);
+      gaugeHVACRunning.set({ level: thermostatRoom, mode: 'system' }, +isRunning);
     }
 
     // "Ack" (acknowledge receipt of) the message
-    console.log('ACK');
+    // console.log('ACK');
     message.ack();
   };
 
