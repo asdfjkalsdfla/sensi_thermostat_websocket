@@ -111,9 +111,9 @@ export class Thermostat {
     // CHECK: Ensure the temp isn't updated all the time
     // when the last temp offset was less than 10 minutes ago, don't update again
     const currentDate: Date = new Date();
-    const assumedDuration = 10 * 60 * 1000;
+    const assumedDuration = 20 * 60 * 1000;
     const timeFromLastChangeToOffset: number = (currentDate.valueOf() - this.dateOfLastTempOffsetChange?.valueOf()) || assumedDuration;
-    if ((timeFromLastChangeToOffset) < 5 * 60 * 1000) {
+    if ((timeFromLastChangeToOffset) < 15 * 60 * 1000) {
       console.log(`Offset not changed since it was updated recently (offset set ${timeDeltaFormatter.format(timeFromLastChangeToOffset / 1000 / 60)} min ago at ${this.dateOfLastTempOffsetChange})`);
       return;
     }
