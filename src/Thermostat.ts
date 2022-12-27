@@ -11,6 +11,8 @@ export class Thermostat {
   socket: Socket = null;
   dateOfLastTempOffsetChange: Date;
   dateSinceOffsetNeedDetected: Date;
+  remoteSensorTempLastRead: number;
+  remoteSensorTempAtHVACStart: number;
 
   constructor(socket: Socket, data: any) {
     if (data.icd_id !== undefined) {
@@ -73,15 +75,22 @@ export class Thermostat {
   }
 
   updateState(stateUpdates: any) {
-    // determine if the message indicates the thermostat is turning off
+    // determine if the message indicates the HVAC is turning off
     if (this.is_running && (stateUpdates?.demand_status?.cool === 0 || stateUpdates?.demand_status?.heat === 0)) {
       stateUpdates.demand_status.last_end = new Date();
+    }
+    // determine if the message indicates the HVAC is turning on
+    if (!this.is_running && (stateUpdates?.demand_status?.cool >= 0 || stateUpdates?.demand_status?.heat >= 0)) {
+      this.remoteSensorTempAtHVACStart=this.remoteSensorTempLastRead;
     }
     const newState = _.merge(this.state, stateUpdates);
     this.state = newState;
   }
 
   async setThermostatTempToSensorTemp(sensorTemperature: number) {
+    // store temp read to use when system turns on    
+    this.remoteSensorTempLastRead = sensorTemperature;
+
     // CALCULATE: Determine the offset to apply
     const currentTempAtThermostatSensor = this.thermostatSensor_temp;
     const temperatureDifference = sensorTemperature - currentTempAtThermostatSensor;
@@ -106,10 +115,18 @@ export class Thermostat {
       return;
     }
 
+    // CHECK: That the temp at sensor exceeds the change needed
+    // This ensurers the sensor has changed at least 1 degree before changing the offset
+    if (this.remoteSensorTempAtHVACStart && this.is_running && Math.abs(this.remoteSensorTempAtHVACStart - sensorTemperature) < 1 ) {
+      this.dateSinceOffsetNeedDetected = null; // if we no longer need the offset, set the offset need detection date to null
+      console.log(`Offset not changed since HVAC is running and temp diff not greater than 1 (temp at start - ${this.remoteSensorTempAtHVACStart}; temp now - ${sensorTemperature})`);
+      return;
+    }
+
     if (!this.dateSinceOffsetNeedDetected) this.dateSinceOffsetNeedDetected = new Date(); // set the offset needed date if one isn't set
 
     // CHECK: Ensure the temp isn't updated all the time
-    // when the last temp offset was less than 10 minutes ago, don't update again
+    // when the last temp offset was less than 15 minutes ago, don't update again
     const currentDate: Date = new Date();
     const assumedDuration = 20 * 60 * 1000;
     const timeFromLastChangeToOffset: number = (currentDate.valueOf() - this.dateOfLastTempOffsetChange?.valueOf()) || assumedDuration;
