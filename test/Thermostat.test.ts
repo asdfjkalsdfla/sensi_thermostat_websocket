@@ -624,7 +624,7 @@ describe('remote sensor matching - ensure in safer periods', () => {
     expect(thermostat.thermostatSensor_temp).toEqual(75.5);
     expect(thermostat.state.temp_offset).toEqual(0);
   });
-  test.only('HVAC offset not at min of 1 degree change from start', async () => {
+  test('HVAC offset not at min of 1 degree change from start', async () => {
     // initial reading producing no change
     let date = new Date(
       2022, 11, 1, 13, 0, 0, 0
