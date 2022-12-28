@@ -27,7 +27,7 @@ export class OutsideAirTempFetcher {
         this.temp = temp;
         const listenersToUpdate = this.#onListeners.filter((listener) => listener.on === 'tempChange');
         listenersToUpdate.forEach((listener) => listener.fn(temp));
-      // console.log(`updated temp to ${this.temp}`);
+        // console.log(`updated temp to ${this.temp}`);
       }
       // eslint-disable-next-line consistent-return
       return this.temp;

@@ -55,12 +55,11 @@ sensiSocket.startSocketConnection().catch((err) => {
 sensiSocket.on('state', (data: any) => {
   thermostats.updateThermostats(data);
   thermostats.forEach((thermostat) => {
-    gaugeTemp.set({ room: 'top_of_stairs' }, thermostat.thermostatSensor_temp);
-    gaugeTemp.set({ room: 'upstairs_thermostat' }, thermostat.thermostat_temp);
-    gaugeHVACRunning.set({ level: 'upstairs', mode: 'system' }, +thermostat.is_running);
-    gaugeHVACRunning.set({ level: 'upstairs', mode: 'heat' }, +thermostat.is_running_heat);
-    gaugeHVACRunning.set({ level: 'upstairs', mode: 'auxheat' }, +thermostat.is_running_auxheat);
-    gaugeHVACRunning.set({ level: 'upstairs', mode: 'cool' }, +thermostat.is_running_cool);
+    gaugeTemp.set({ room: 'basemenet' }, thermostat.thermostatSensor_temp);
+    gaugeHVACRunning.set({ level: 'basemenet', mode: 'system' }, +thermostat.is_running);
+    gaugeHVACRunning.set({ level: 'basemenet', mode: 'heat' }, +thermostat.is_running_heat);
+    gaugeHVACRunning.set({ level: 'basemenet', mode: 'auxheat' }, +thermostat.is_running_auxheat);
+    gaugeHVACRunning.set({ level: 'basemenet', mode: 'cool' }, +thermostat.is_running_cool);
   });
 });
 
@@ -87,7 +86,8 @@ const readTemperatureSensorDataContinuously = async (sensor) => {
       gaugeTemp.set({ room: 'office' }, avgTemps);
       if (isWorkingTime()) {
         thermostats.forEach((thermostat) => {
-          thermostat.setThermostatTempToSensorTemp(avgTemps);
+          let a = 1;
+          // thermostat.setThermostatTempToSensorTemp(avgTemps);
         });
       }
       tempReadings = [];
@@ -165,7 +165,7 @@ const main = async () => {
   tempFetcher.on('tempChange', (temp) => { gaugeTemp.set({ room: 'outside' }, temp); });
 
   // manageCirculatingFanSchedule();
-  setToRemoteThermostatTempContinuously();
+  // setToRemoteThermostatTempContinuously();
 };
 
 main();
