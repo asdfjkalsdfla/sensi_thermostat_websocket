@@ -14,22 +14,26 @@ export class OutsideAirTempFetcher {
   #onListeners: any = [];
 
   updateTempExternal = async () => {
-    const weatherResponse = await globalThis.fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${LAT}&lon=${LON}&appid=${OPEN_WEATHER_MAP_KEY}&units=imperial`);
-    if (!weatherResponse.ok) {
-      return;
-    }
-    const allWeatherData: any = await weatherResponse.json();
-    // console.log(allWeatherData);
-    const { temp } = allWeatherData.main;
-    // only update when things have changed
-    if (!this.temp || Math.abs(temp - this.temp) > 0.1) {
-      this.temp = temp;
-      const listenersToUpdate = this.#onListeners.filter((listener) => listener.on === 'tempChange');
-      listenersToUpdate.forEach((listener) => listener.fn(temp));
+    try {
+      const weatherResponse = await globalThis.fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${LAT}&lon=${LON}&appid=${OPEN_WEATHER_MAP_KEY}&units=imperial`);
+      if (!weatherResponse.ok) {
+        return;
+      }
+      const allWeatherData: any = await weatherResponse.json();
+      // console.log(allWeatherData);
+      const { temp } = allWeatherData.main;
+      // only update when things have changed
+      if (!this.temp || Math.abs(temp - this.temp) > 0.1) {
+        this.temp = temp;
+        const listenersToUpdate = this.#onListeners.filter((listener) => listener.on === 'tempChange');
+        listenersToUpdate.forEach((listener) => listener.fn(temp));
       // console.log(`updated temp to ${this.temp}`);
+      }
+      // eslint-disable-next-line consistent-return
+      return this.temp;
+    } catch (err) {
+      console.error(err);
     }
-    // eslint-disable-next-line consistent-return
-    return this.temp;
   };
 
   start = async () => {
