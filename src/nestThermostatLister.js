@@ -27,7 +27,7 @@ export const nestThermostatListener = async (
     const messageData = JSON.parse(messageDataJSON);
 
     // Bad way to do this, but hey...
-    const thermostatRoom = messageData?.resourceUpdate?.name === NEST_THERMOSTAT_ID ? 'main' : 'basement';
+    const thermostatRoom = messageData?.resourceUpdate?.name === NEST_THERMOSTAT_ID ? 'main' : 'upstairs';
 
     // const timeStamp = new Date(messageData.timestamp);
 
