@@ -15,7 +15,7 @@ export class OutsideAirTempFetcher {
 
   updateTempExternal = async () => {
     try {
-      const weatherResponse = await globalThis.fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${LAT}&lon=${LON}&appid=${OPEN_WEATHER_MAP_KEY}&units=imperial`);
+      const weatherResponse = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${LAT}&lon=${LON}&appid=${OPEN_WEATHER_MAP_KEY}&units=imperial`);
       if (!weatherResponse.ok) {
         return;
       }
