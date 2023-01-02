@@ -1,0 +1,1 @@
+export const TEMP_NUMBER_FORMATTER = { format: (number) => Math.round(10*number)/10 };

@@ -11,6 +11,7 @@ import { Thermostats } from './Thermostats.js';
 import * as config from './config.js';
 import { nestThermostatListener } from './nestThermostatLister.js';
 import { OutsideAirTempFetcher } from './OutsideAirTempFetcher.js';
+import { TEMP_NUMBER_FORMATTER } from './Util.js'
 
 export const { REMOTE_TEMP_ADDRESS, DOMAIN } = process.env;
 
@@ -83,7 +84,7 @@ const readTemperatureSensorDataContinuously = async (sensor) => {
     if (tempReadings.length > 4) {
       const avgTemps = average(tempReadings);
       // console.log(`In average temp with value of ${avgTemps}`);
-      gaugeTemp.set({ room: 'office' }, avgTemps);
+      gaugeTemp.set({ room: 'office' }, TEMP_NUMBER_FORMATTER.format(avgTemps));
       if (isWorkingTime()) {
         thermostats.forEach((thermostat) => {
           let a = 1;
@@ -162,7 +163,7 @@ const main = async () => {
   );
   const tempFetcher = new OutsideAirTempFetcher();
   tempFetcher.start();
-  tempFetcher.on('tempChange', (temp) => { gaugeTemp.set({ room: 'outside' }, temp); });
+  tempFetcher.on('tempChange', (temp) => { gaugeTemp.set({ room: 'outside' }, TEMP_NUMBER_FORMATTER.format(temp)); });
 
   // manageCirculatingFanSchedule();
   // setToRemoteThermostatTempContinuously();

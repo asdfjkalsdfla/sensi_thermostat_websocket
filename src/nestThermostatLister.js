@@ -1,5 +1,6 @@
 // Imports the Google Cloud client library
 import { PubSub } from '@google-cloud/pubsub';
+import { TEMP_NUMBER_FORMATTER } from './Util.js'
 
 const { NEST_THERMOSTAT_ID } = process.env;
 
@@ -36,7 +37,7 @@ export const nestThermostatListener = async (
     if (tempC) {
       const tempF = tempC * 1.8 + 32;
       // console.log(`Temp: ${tempF} at ${timeStamp.toLocaleString()}`);
-      gaugeTemp.set({ room: thermostatRoom }, tempF);
+      gaugeTemp.set({ room: thermostatRoom }, TEMP_NUMBER_FORMATTER.format(tempF));
     }
 
     const hvacRunningInfo = messageData?.resourceUpdate?.traits['sdm.devices.traits.ThermostatHvac']?.status;
