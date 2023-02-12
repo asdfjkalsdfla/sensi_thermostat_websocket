@@ -10,7 +10,8 @@
   ],
   "lockFileMaintenance": {
     "enabled": true,
-    "automerge": true
+    "automerge": true,
+    "schedule": "before 5am on saturday"
   },
   "ignoreDeps": ["socket.io-client"],
   "timezone": "America/New_York",
