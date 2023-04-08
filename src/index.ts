@@ -147,14 +147,28 @@ app.get('/temp', async (req, res) => {
   res.send(JSON.stringify(await readTemperatureSensorData(globalSensor)));
 });
 
-const main = async () => {
-  const certDir = '/etc/letsencrypt/live';
-  const options = {
-    key: fs.readFileSync(`${certDir}/${DOMAIN}/privkey.pem`),
-    cert: fs.readFileSync(`${certDir}/${DOMAIN}/fullchain.pem`)
-  };
+const readCertsSync = (certDir) => {
+  return {
+    key: fs.readFileSync(`${certDir}/privkey.pem`),
+    cert: fs.readFileSync(`${certDir}/fullchain.pem`)
+  }
+}
 
-  https.createServer(options, app).listen(9091, () => console.log('Server is running on http://localhost:9091, metrics are exposed on http://localhost:9091/metrics'));
+const main = async () => {
+  const certDir = `/etc/letsencrypt/live/${DOMAIN}`;
+  const options = readCertsSync(certDir);
+
+  const httpd = https.createServer(options, app).listen(9091, () => console.log('Server is running on http://localhost:9091, metrics are exposed on http://localhost:9091/metrics'));
+
+  // Auto update cert
+  let waitForCertAndFullChainToGetUpdatedTooTimeout;
+  fs.watch(certDir, () => {
+    clearTimeout(waitForCertAndFullChainToGetUpdatedTooTimeout);
+    waitForCertAndFullChainToGetUpdatedTooTimeout = setTimeout(() => {
+      httpd.setSecureContext(readCertsSync(certDir));
+    }, 5000);
+  });
+
   const sensor = await aht20.open();
   globalSensor = sensor;
   readTemperatureSensorDataContinuously(sensor);
