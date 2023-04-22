@@ -7,15 +7,16 @@ import type { Interceptable, MockInterceptor } from 'undici/types/mock-intercept
 // import { rest } from 'msw';
 // import { setupServer } from 'msw/node';
 
-const tokenEndpoint = 'https://test.georgiavotesvisual.com';
+vi.mock('../src/config.js', () => ({
+  TOKEN_ENDPOINT: 'https://test.georgiavotesvisual.com'
+}));
+
 const email = faker.internet.userName();
 const password = faker.internet.password();
 const clientId = faker.datatype.uuid();
 const clientSecret = faker.datatype.uuid();
 
-vi.mock('../src/config.js', () => ({
-  TOKEN_ENDPOINT: tokenEndpoint
-}));
+const tokenEndpoint = 'https://test.georgiavotesvisual.com';
 
 import { Authorization } from '../src/authorization.js';
 
