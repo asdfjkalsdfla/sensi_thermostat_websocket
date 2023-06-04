@@ -13,8 +13,8 @@ vi.mock('../src/config.js', () => ({
 
 const email = faker.internet.userName();
 const password = faker.internet.password();
-const clientId = faker.datatype.uuid();
-const clientSecret = faker.datatype.uuid();
+const clientId = faker.string.uuid();
+const clientSecret = faker.string.uuid();
 
 const tokenEndpoint = 'https://test.georgiavotesvisual.com';
 
@@ -47,8 +47,8 @@ describe('authorization', () => {
     });
 
     test('call endpoint and return token', async () => {
-      const accessToken = faker.datatype.uuid();
-      const refreshToken = faker.datatype.uuid();
+      const accessToken = faker.string.uuid();
+      const refreshToken = faker.string.uuid();
       mockPool
         .intercept({
           path: `${tokenEndpoint}/token`,
@@ -145,8 +145,8 @@ describe('authorization', () => {
   });
 
   describe('refreshAccessToken', () => {
-    const accessToken = faker.datatype.uuid();
-    const refreshToken = faker.datatype.uuid();
+    const accessToken = faker.string.uuid();
+    const refreshToken = faker.string.uuid();
     const response = { access_token: accessToken, refresh_token: refreshToken };
 
     beforeEach(async () => {
@@ -172,7 +172,7 @@ describe('authorization', () => {
     });
 
     test('refresh access token', async () => {
-      const newAccessToken = faker.datatype.uuid();
+      const newAccessToken = faker.string.uuid();
       mockPool
         .intercept({
           path: `${tokenEndpoint}/token`,

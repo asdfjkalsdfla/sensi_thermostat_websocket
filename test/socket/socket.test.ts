@@ -7,9 +7,9 @@ import { faker } from '@faker-js/faker';
 // authorization mock
 import { Authorization } from '../../src/authorization.js';
 
-// const accessToken = faker.datatype.uuid();
+// const accessToken = faker.string.uuid();
 // const mockAuthorizationImplementation = {
-//   accessToken: faker.datatype.uuid(),
+//   accessToken: faker.string.uuid(),
 //   login: vi.fn().mockResolvedValue(null),
 //   refreshAccessToken: vi.fn().mockResolvedValue(null),
 //   isRefreshTokenAvailable: vi.fn()
@@ -17,7 +17,7 @@ import { Authorization } from '../../src/authorization.js';
 
 vi.mock('../../src/authorization.js', () => ({
   Authorization: vi.fn().mockImplementation(() => ({
-    accessToken: faker.datatype.uuid(),
+    accessToken: faker.string.uuid(),
     login: vi.fn().mockResolvedValue(null),
     refreshAccessToken: vi.fn().mockResolvedValue(null),
     isRefreshTokenAvailable: vi.fn()
