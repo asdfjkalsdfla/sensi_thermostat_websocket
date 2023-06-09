@@ -10,5 +10,6 @@ esbuild.build({
   platform: 'node',
   format: 'esm',
   sourcemap: true,
-  packages: 'external'
+  packages: 'external',
+  target: 'es2021'
 }).catch(() => process.exit(1))
