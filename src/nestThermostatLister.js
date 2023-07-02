@@ -37,7 +37,7 @@ export const nestThermostatListener = async (
     if (tempC) {
       const tempF = tempC * 1.8 + 32;
       // console.log(`Temp: ${tempF} at ${timeStamp.toLocaleString()}`);
-      gaugeTemp.set({ room: thermostatRoom }, TEMP_NUMBER_FORMATTER.format(tempF));
+      if(gaugeTemp) gaugeTemp.set({ room: thermostatRoom }, TEMP_NUMBER_FORMATTER.format(tempF));
     }
 
     const hvacRunningInfo = messageData?.resourceUpdate?.traits['sdm.devices.traits.ThermostatHvac']?.status;
@@ -52,10 +52,12 @@ export const nestThermostatListener = async (
       // console.log(`HVAC Cool Run: ${is_running_cool}`);
       // console.log(`HVAC Run: ${is_running}`);
 
+      if(gaugeHVACRunning) {
       gaugeHVACRunning.set({ level: thermostatRoom, mode: 'heat' }, +isRunningHeat);
       gaugeHVACRunning.set({ level: thermostatRoom, mode: 'auxheat' }, +isRunningAuxHeat);
       gaugeHVACRunning.set({ level: thermostatRoom, mode: 'cool' }, +isRunningCool);
       gaugeHVACRunning.set({ level: thermostatRoom, mode: 'system' }, +isRunning);
+      }
     }
 
     // "Ack" (acknowledge receipt of) the message

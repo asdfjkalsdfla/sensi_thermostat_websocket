@@ -3,7 +3,7 @@
 const esbuild = require('esbuild')
 
 esbuild.build({
-  entryPoints: ['./src/index.ts'],
+  entryPoints: ['./src/index.ts','./src/nestDebug.ts'],
   outdir: 'build/',
   bundle: true,
   minify: false,
