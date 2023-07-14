@@ -32,6 +32,8 @@ let globalSensor = null;
 const register = new client.Registry();
 const gaugeTemp = new client.Gauge({ name: 'temp_ambient_f', help: 'the ambient temperature', labelNames: ['room'] });
 register.registerMetric(gaugeTemp);
+const gaugeHumidity = new client.Gauge({ name: 'humidity', help: 'the humidity', labelNames: ['room'] });
+register.registerMetric(gaugeHumidity);
 const gaugeHVACRunning = new client.Gauge({ name: 'hvac_running', help: 'indicates if the hvac is running', labelNames: ['level', 'mode'] });
 register.registerMetric(gaugeHVACRunning);
 
@@ -72,6 +74,7 @@ const readTemperatureSensorData = async (sensor) => {
 
 const readTemperatureSensorDataContinuously = async (sensor) => {
   let tempReadings = [];
+  let humidityReadings = [];
   // eslint-disable-next-line no-constant-condition
   while (true) {
     await sleep(30 * 1000);
@@ -80,11 +83,15 @@ const readTemperatureSensorDataContinuously = async (sensor) => {
     // basic check for outlier data
     // eslint-disable-next-line max-len
     if ((remoteSensorData.temperatureF < 110) && (remoteSensorData.temperatureF > 10)) tempReadings.push(remoteSensorData.temperatureF);
+    humidityReadings.push(remoteSensorData.humidity);
+
     // after 4 temp readings, take the average and then perform the offset
     if (tempReadings.length > 4) {
       const avgTemps = average(tempReadings);
+      const avgHumidity = average(humidityReadings);
       // console.log(`In average temp with value of ${avgTemps}`);
       gaugeTemp.set({ room: 'office' }, TEMP_NUMBER_FORMATTER.format(avgTemps));
+      gaugeHumidity.set({ room: 'office' }, TEMP_NUMBER_FORMATTER.format(avgHumidity));
       if (isWorkingTime()) {
         thermostats.forEach((thermostat) => {
           let a = 1;
@@ -92,6 +99,7 @@ const readTemperatureSensorDataContinuously = async (sensor) => {
         });
       }
       tempReadings = [];
+      humidityReadings = []
     }
   }
 };
