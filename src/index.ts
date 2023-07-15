@@ -187,6 +187,7 @@ const main = async () => {
   const tempFetcher = new OutsideAirTempFetcher();
   tempFetcher.start();
   tempFetcher.on('tempChange', (temp) => { gaugeTemp.set({ room: 'outside' }, TEMP_NUMBER_FORMATTER.format(temp)); });
+  tempFetcher.on('humidityChange', (humidity) => { gaugeHumidity.set({ room: 'outside' }, TEMP_NUMBER_FORMATTER.format(humidity)); });
 
   // manageCirculatingFanSchedule();
   // setToRemoteThermostatTempContinuously();

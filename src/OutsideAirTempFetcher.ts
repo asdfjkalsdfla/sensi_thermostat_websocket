@@ -11,6 +11,7 @@ const sleep = (duration) => new Promise((resolve) => {
 
 export class OutsideAirTempFetcher {
   temp: number;
+  humidity: number;
   #onListeners: any = [];
 
   updateTempExternal = async () => {
@@ -21,7 +22,7 @@ export class OutsideAirTempFetcher {
       }
       const allWeatherData: any = await weatherResponse.json();
       // console.log(allWeatherData);
-      const { temp } = allWeatherData.main;
+      const { temp, humidity } = allWeatherData.main;
       // only update when things have changed
       if (!this.temp || Math.abs(temp - this.temp) > 0.1) {
         this.temp = temp;
@@ -29,6 +30,14 @@ export class OutsideAirTempFetcher {
         listenersToUpdate.forEach((listener) => listener.fn(temp));
         // console.log(`updated temp to ${this.temp}`);
       }
+
+      // only update when things have changed
+      if (!this.humidity || Math.abs(humidity - this.humidity) > 0.1) {
+        this.humidity = humidity;
+        const listenersToUpdate = this.#onListeners.filter((listener) => listener.on === 'humidityChange');
+        listenersToUpdate.forEach((listener) => listener.fn(humidity));
+      }
+
       // eslint-disable-next-line consistent-return
       return this.temp;
     } catch (err) {
