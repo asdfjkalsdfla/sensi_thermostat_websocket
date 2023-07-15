@@ -48,6 +48,12 @@ export class Thermostat {
     return this.state.display_temp;
   }
 
+  // The humidity at the thermostat
+  get humidity(): number {
+    if (!this.state) return NaN;
+    return this.state.humidity;
+  }
+
   // is the system cooling
   get is_running_cool(): boolean {
     return this.state?.demand_status?.cool > 1;

@@ -59,6 +59,7 @@ sensiSocket.on('state', (data: any) => {
   thermostats.updateThermostats(data);
   thermostats.forEach((thermostat) => {
     gaugeTemp.set({ room: 'basemenet' }, thermostat.thermostatSensor_temp);
+    gaugeHumidity.set({ room: 'basemenet' }, thermostat.humidity);
     gaugeHVACRunning.set({ level: 'basemenet', mode: 'system' }, +thermostat.is_running);
     gaugeHVACRunning.set({ level: 'basemenet', mode: 'heat' }, +thermostat.is_running_heat);
     gaugeHVACRunning.set({ level: 'basemenet', mode: 'auxheat' }, +thermostat.is_running_auxheat);
@@ -181,7 +182,7 @@ const main = async () => {
   globalSensor = sensor;
   readTemperatureSensorDataContinuously(sensor);
   nestThermostatListener(
-    'nest-device-access-345321', 'nestPull', gaugeTemp, gaugeHVACRunning
+    'nest-device-access-345321', 'nestPull', gaugeTemp, gaugeHVACRunning, gaugeHumidity
   );
   const tempFetcher = new OutsideAirTempFetcher();
   tempFetcher.start();
