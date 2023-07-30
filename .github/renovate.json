@@ -6,15 +6,15 @@
   "packageRules": [
     {
       "groupName": "minors and patches",
-      "matchUpdateTypes": ["minor","patch"],
+      "matchUpdateTypes": ["minor", "patch", "lockFileMaintenance"],
       "automerge": true,
-      "schedule": "before 5am on saturday"
+      "schedule": "before 5am on sunday"
     }
   ],
   "lockFileMaintenance": {
     "enabled": true,
     "automerge": true,
-    "schedule": "before 5am on sunday"
+    "schedule": "before 6am on sunday"
   },
   "ignoreDeps": ["socket.io-client"],
   "timezone": "America/New_York",
