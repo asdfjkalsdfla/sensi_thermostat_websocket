@@ -1,6 +1,6 @@
 {
   "name": "sensi_thermostat_websocket",
-  "packageManager": "pnpm@8.10.0",
+  "packageManager": "pnpm@8.10.2",
   "version": "0.0.1",
   "type": "module",
   "dependencies": {
@@ -14,24 +14,24 @@
     "socket.io-client": "^2.4.0",
     "ts-node": "^10.9.1",
     "typescript": "5.2",
-    "undici": "^5.27.0"
+    "undici": "^5.27.2"
   },
   "devDependencies": {
     "@faker-js/faker": "^8.2.0",
-    "@types/node": "^20.8.9",
-    "@typescript-eslint/eslint-plugin": "^6.9.0",
-    "@typescript-eslint/parser": "^6.9.0",
-    "@typescript-eslint/typescript-estree": "^6.9.0",
-    "@typescript-eslint/utils": "^6.9.0",
+    "@types/node": "^20.8.10",
+    "@typescript-eslint/eslint-plugin": "^6.9.1",
+    "@typescript-eslint/parser": "^6.9.1",
+    "@typescript-eslint/typescript-estree": "^6.9.1",
+    "@typescript-eslint/utils": "^6.9.1",
     "@vitest/coverage-v8": "^0.34.6",
-    "eslint": "^8.52.0",
+    "eslint": "^8.53.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-airbnb-typescript": "^17.1.0",
     "eslint-plugin-import": "^2.29.0",
-    "eslint-plugin-jsx-a11y": "^6.7.1",
+    "eslint-plugin-jsx-a11y": "^6.8.0",
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.6.0",
-    "msw": "^2.0.1",
+    "msw": "^2.0.3",
     "vitest": "^0.34.6"
   },
   "scripts": {
