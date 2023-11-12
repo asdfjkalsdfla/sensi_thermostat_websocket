@@ -4,7 +4,7 @@
   "version": "0.0.1",
   "type": "module",
   "dependencies": {
-    "@google-cloud/pubsub": "^4.0.6",
+    "@google-cloud/pubsub": "^4.0.7",
     "aht20-sensor": "^1.0.2",
     "dotenv": "^16.3.1",
     "esbuild": "^0.19.5",
@@ -18,11 +18,11 @@
   },
   "devDependencies": {
     "@faker-js/faker": "^8.2.0",
-    "@types/node": "^20.8.10",
-    "@typescript-eslint/eslint-plugin": "^6.9.1",
-    "@typescript-eslint/parser": "^6.9.1",
-    "@typescript-eslint/typescript-estree": "^6.9.1",
-    "@typescript-eslint/utils": "^6.9.1",
+    "@types/node": "^20.9.0",
+    "@typescript-eslint/eslint-plugin": "^6.10.0",
+    "@typescript-eslint/parser": "^6.10.0",
+    "@typescript-eslint/typescript-estree": "^6.10.0",
+    "@typescript-eslint/utils": "^6.10.0",
     "@vitest/coverage-v8": "^0.34.6",
     "eslint": "^8.53.0",
     "eslint-config-airbnb": "^19.0.4",
@@ -31,7 +31,7 @@
     "eslint-plugin-jsx-a11y": "^6.8.0",
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.6.0",
-    "msw": "^2.0.3",
+    "msw": "^2.0.5",
     "vitest": "^0.34.6"
   },
   "scripts": {
