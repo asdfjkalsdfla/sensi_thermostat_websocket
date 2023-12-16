@@ -18,7 +18,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm run build
       - name: archive build outputs
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: build
           path: build/
@@ -26,7 +26,7 @@ jobs:
       - run: pnpm run test
       - run: pnpm run coverage
       - name: archive test coverage report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: testCoverage
           path: test/coverageReports/
