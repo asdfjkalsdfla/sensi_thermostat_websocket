@@ -1,6 +1,6 @@
 {
   "name": "sensi_thermostat_websocket",
-  "packageManager": "pnpm@8.15.5",
+  "packageManager": "pnpm@8.15.6",
   "version": "0.0.1",
   "type": "module",
   "dependencies": {
@@ -14,11 +14,11 @@
     "socket.io-client": "^2.4.0",
     "ts-node": "^10.9.2",
     "typescript": "5.4",
-    "undici": "^5.28.3"
+    "undici": "^5.28.4"
   },
   "devDependencies": {
     "@faker-js/faker": "^8.4.1",
-    "@types/node": "^20.12.2",
+    "@types/node": "^20.12.5",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "@typescript-eslint/parser": "^6.21.0",
     "@typescript-eslint/typescript-estree": "^6.21.0",
