@@ -14,7 +14,7 @@
     "socket.io-client": "^2.4.0",
     "ts-node": "^10.9.2",
     "typescript": "5.4.5",
-    "undici": "^5.28.4"
+    "undici": "^6.13.0"
   },
   "devDependencies": {
     "@faker-js/faker": "^8.4.1",
