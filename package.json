@@ -38,7 +38,7 @@
     "check": "tsc -p tsconfig.build.json",
     "test": "vitest",
     "coverage": "vitest run --coverage",
-    "lint": "eslint src/**"
+    "lint": "eslint src/**/** --no-warn-ignored"
   },
   "jest": {
     "clearMocks": true,
