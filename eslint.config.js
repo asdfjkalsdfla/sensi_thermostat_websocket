@@ -1,8 +1,10 @@
-export default [
-    {
-        rules: {
-            semi: "error",
-            "prefer-const": "error"
-        }
-    }
-];
+import eslint from "@eslint/js";
+import tseslint from "typescript-eslint";
+
+export default tseslint.config(
+  eslint.configs.recommended,
+  ...tseslint.configs.recommended,
+  {
+    files: ["src/**/*.js", "src/**/*.ts"],
+  }
+);
