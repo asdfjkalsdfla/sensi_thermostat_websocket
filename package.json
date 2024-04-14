@@ -5,18 +5,17 @@
   "type": "module",
   "dependencies": {
     "@google-cloud/pubsub": "^4.3.3",
-    "aht20-sensor": "^1.0.2",
+    "aht20-sensor": "^0.1.1",
     "dotenv": "^16.4.5",
     "esbuild": "^0.20.2",
     "express": "^4.19.2",
     "lodash": "^4.17.21",
     "prom-client": "^15.1.1",
     "socket.io-client": "^2.4.0",
-    "ts-node": "^10.9.2",
-    "typescript": "5.4.5",
-    "undici": "^5.28.4"
+    "typescript": "5.4.5"
   },
   "devDependencies": {
+    "@eslint/js": "^9.0.0",
     "@faker-js/faker": "^8.4.1",
     "@types/node": "^20.12.7",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
@@ -24,14 +23,15 @@
     "@typescript-eslint/typescript-estree": "^6.21.0",
     "@typescript-eslint/utils": "^6.21.0",
     "@vitest/coverage-v8": "^1.5.0",
-    "eslint": "^8.57.0",
+    "eslint": "^9.0.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-airbnb-typescript": "^17.1.0",
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-jsx-a11y": "^6.8.0",
     "eslint-plugin-react": "^7.34.1",
     "eslint-plugin-react-hooks": "^4.6.0",
-    "msw": "^2.2.13",
+    "typescript-eslint": "^7.6.0",
+    "undici": "^6.13.0",
     "vitest": "^1.5.0"
   },
   "scripts": {
@@ -40,7 +40,7 @@
     "check": "tsc -p tsconfig.build.json",
     "test": "vitest",
     "coverage": "vitest run --coverage",
-    "lint": "eslint src/**"
+    "lint": "eslint"
   },
   "jest": {
     "clearMocks": true,
