@@ -12,8 +12,8 @@ importers:
         specifier: ^4.5.0
         version: 4.5.0
       aht20-sensor:
-        specifier: ^0.1.1
-        version: 0.1.1
+        specifier: ^1.0.2
+        version: 1.0.2
       dotenv:
         specifier: ^16.4.5
         version: 16.4.5
@@ -490,6 +490,9 @@ packages:
   '@types/estree@1.0.5':
     resolution: {integrity: sha512-/kYRxGDLWzHOB7q+wtSUQlFrtcdUccpfy+X+9iMBpHK8QLLhx2wIPYuS5DYtR9Wa/YlZAbIovy7qVdB1Aq6Lyw==}
 
+  '@types/i2c-bus@5.1.2':
+    resolution: {integrity: sha512-Zph1a3TZnvU8yUEhR8Yvv+Fv61dE3WQ2gMs4B2KgBUuKYE73quagMvmUN9EvRIbf4B+zq1WKMYjLOafdNus1ig==}
+
   '@types/json5@0.0.29':
     resolution: {integrity: sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==}
 
@@ -616,8 +619,8 @@ packages:
     resolution: {integrity: sha512-H0TSyFNDMomMNJQBn8wFV5YC/2eJ+VXECwOadZJT554xP6cODZHPX3H9QMQECxvrgiSOP1pHjy1sMWQVYJOUOA==}
     engines: {node: '>= 14'}
 
-  aht20-sensor@0.1.1:
-    resolution: {integrity: sha512-ITjnBAOKIaTl5l78LiVWRI0s2uEADKLXUU7QUCv6w4ETA5VroKzLMG71BX9CeLdcrBjq5kLs37U7CG85c6PalQ==}
+  aht20-sensor@1.0.2:
+    resolution: {integrity: sha512-jv83EZy+e/qHzLHLBCeRA+7KzPENdxOmNu9MH7D7qDfgHRm3c4ZRr/QlKxf9znGYX6kZCJt3a3ztYoVdPTn8rg==}
 
   ajv@6.12.6:
     resolution: {integrity: sha512-j3fVLgvTo527anyYyJOGTYJbG+vnnQYvE0m5mmkc1TK+nxAppkCLMIL0aZ4dblVCNoGShhm+kzE4ZUykBoMg4g==}
@@ -2644,6 +2647,10 @@ snapshots:
 
   '@types/estree@1.0.5': {}
 
+  '@types/i2c-bus@5.1.2':
+    dependencies:
+      '@types/node': 20.14.2
+
   '@types/json5@0.0.29': {}
 
   '@types/long@4.0.2': {}
@@ -2823,8 +2830,10 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  aht20-sensor@0.1.1:
+  aht20-sensor@1.0.2:
     dependencies:
+      '@types/i2c-bus': 5.1.2
+      '@types/node': 20.14.2
       i2c-bus: 5.2.3
 
   ajv@6.12.6:
