@@ -1,13 +1,13 @@
 {
   "name": "sensi_thermostat_websocket",
-  "packageManager": "pnpm@9.2.0",
+  "packageManager": "pnpm@9.3.0",
   "version": "0.0.1",
   "type": "module",
   "dependencies": {
-    "@google-cloud/pubsub": "^4.4.1",
+    "@google-cloud/pubsub": "^4.5.0",
     "aht20-sensor": "^0.1.1",
     "dotenv": "^16.4.5",
-    "esbuild": "^0.21.4",
+    "esbuild": "^0.21.5",
     "express": "^4.19.2",
     "lodash": "^4.17.21",
     "prom-client": "^15.1.2",
@@ -15,19 +15,19 @@
     "typescript": "5.4.5"
   },
   "devDependencies": {
-    "@eslint/js": "^9.4.0",
+    "@eslint/js": "^9.5.0",
     "@faker-js/faker": "^8.4.1",
     "@types/node": "^20.14.2",
     "@vitest/coverage-v8": "^1.6.0",
-    "eslint": "^9.4.0",
+    "eslint": "^9.5.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-airbnb-typescript": "^17.1.0",
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-jsx-a11y": "^6.8.0",
     "eslint-plugin-react": "^7.34.2",
     "eslint-plugin-react-hooks": "^4.6.2",
-    "typescript-eslint": "^7.12.0",
-    "undici": "^6.18.2",
+    "typescript-eslint": "^7.13.0",
+    "undici": "^6.19.0",
     "vitest": "^1.6.0"
   },
   "scripts": {
