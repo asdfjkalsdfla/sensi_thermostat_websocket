@@ -19,6 +19,6 @@
   "eslint.validate": ["javascript", "typescript", "html"],
   "eslint.format.enable": true,
   "eslint.options": {
-    "overrideConfigFile": "./.eslintrc.cjs"
+    "overrideConfigFile": "./eslint.config.js"
   }
 }
