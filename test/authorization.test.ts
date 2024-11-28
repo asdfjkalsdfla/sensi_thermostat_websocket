@@ -11,7 +11,7 @@ vi.mock('../src/config.js', () => ({
   TOKEN_ENDPOINT: 'https://test.georgiavotesvisual.com'
 }));
 
-const email = faker.internet.userName();
+const email = faker.internet.username();
 const password = faker.internet.password();
 const clientId = faker.string.uuid();
 const clientSecret = faker.string.uuid();
