@@ -1,13 +1,13 @@
 {
   "name": "sensi_thermostat_websocket",
-  "packageManager": "pnpm@9.15.0",
+  "packageManager": "pnpm@9.15.1",
   "version": "0.0.1",
   "type": "module",
   "dependencies": {
     "@google-cloud/pubsub": "^4.9.0",
     "aht20-sensor": "^0.1.1",
     "dotenv": "^16.4.7",
-    "esbuild": "^0.24.0",
+    "esbuild": "^0.24.2",
     "express": "^4.21.2",
     "lodash": "^4.17.21",
     "prom-client": "^15.1.3",
