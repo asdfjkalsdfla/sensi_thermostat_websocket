@@ -12,8 +12,8 @@ importers:
         specifier: ^4.10.0
         version: 4.10.0
       aht20-sensor:
-        specifier: ^0.1.1
-        version: 0.1.1
+        specifier: ^1.0.2
+        version: 1.0.2
       dotenv:
         specifier: ^16.4.7
         version: 16.4.7
@@ -534,6 +534,9 @@ packages:
   '@types/estree@1.0.6':
     resolution: {integrity: sha512-AYnb1nQyY49te+VRAVgmzfcgjYS91mY5P0TKUDCLEM+gNnA+3T6rWITXRLYCpahpqSQbN5cE+gHpnPyXjHWxcw==}
 
+  '@types/i2c-bus@5.1.2':
+    resolution: {integrity: sha512-Zph1a3TZnvU8yUEhR8Yvv+Fv61dE3WQ2gMs4B2KgBUuKYE73quagMvmUN9EvRIbf4B+zq1WKMYjLOafdNus1ig==}
+
   '@types/json-schema@7.0.15':
     resolution: {integrity: sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==}
 
@@ -542,6 +545,9 @@ packages:
 
   '@types/long@4.0.2':
     resolution: {integrity: sha512-MqTGEo5bj5t157U6fA/BiDynNkn0YknVdh48CMPkTSpFTVmvao5UQmm7uEF6xBEo7qIMAlY/JSleYaE6VOdpaA==}
+
+  '@types/node@20.17.17':
+    resolution: {integrity: sha512-/WndGO4kIfMicEQLTi/mDANUu/iVUhT7KboZPdEqqHQ4aTS+3qT3U5gIqWDFV+XouorjfgGqvKILJeHhuQgFYg==}
 
   '@types/node@22.13.1':
     resolution: {integrity: sha512-jK8uzQlrvXqEU91UxiK5J7pKHyzgnI1Qnl0QDHIgVGuolJhRb9EEl28Cj9b3rGR8B2lhFCtvIm5os8lFnO/1Ew==}
@@ -677,8 +683,8 @@ packages:
     resolution: {integrity: sha512-jRR5wdylq8CkOe6hei19GGZnxM6rBGwFl3Bg0YItGDimvjGtAvdZk4Pu6Cl4u4Igsws4a1fd1Vq3ezrhn4KmFw==}
     engines: {node: '>= 14'}
 
-  aht20-sensor@0.1.1:
-    resolution: {integrity: sha512-ITjnBAOKIaTl5l78LiVWRI0s2uEADKLXUU7QUCv6w4ETA5VroKzLMG71BX9CeLdcrBjq5kLs37U7CG85c6PalQ==}
+  aht20-sensor@1.0.2:
+    resolution: {integrity: sha512-jv83EZy+e/qHzLHLBCeRA+7KzPENdxOmNu9MH7D7qDfgHRm3c4ZRr/QlKxf9znGYX6kZCJt3a3ztYoVdPTn8rg==}
 
   ajv@6.12.6:
     resolution: {integrity: sha512-j3fVLgvTo527anyYyJOGTYJbG+vnnQYvE0m5mmkc1TK+nxAppkCLMIL0aZ4dblVCNoGShhm+kzE4ZUykBoMg4g==}
@@ -2245,6 +2251,9 @@ packages:
     resolution: {integrity: sha512-nWJ91DjeOkej/TA8pXQ3myruKpKEYgqvpw9lz4OPHj/NWFNluYrjbz9j01CJ8yKQd2g4jFoOkINCTW2I5LEEyw==}
     engines: {node: '>= 0.4'}
 
+  undici-types@6.19.8:
+    resolution: {integrity: sha512-ve2KP6f/JnbPBFyobGHuerC9g1FYGn/F8n1LWTwNxCEzd6IfqTwUQcNXgEtmmQ6DlRrC1hrSrBnCZPokRrDHjw==}
+
   undici-types@6.20.0:
     resolution: {integrity: sha512-Ny6QZ2Nju20vw1SRHe3d9jVu6gJ+4e3+MMpqu7pqE5HT6WsTSlce++GQmK5UXS8mzV8DSYHrQH+Xrf2jVcuKNg==}
 
@@ -2763,11 +2772,19 @@ snapshots:
 
   '@types/estree@1.0.6': {}
 
+  '@types/i2c-bus@5.1.2':
+    dependencies:
+      '@types/node': 22.13.1
+
   '@types/json-schema@7.0.15': {}
 
   '@types/json5@0.0.29': {}
 
   '@types/long@4.0.2': {}
+
+  '@types/node@20.17.17':
+    dependencies:
+      undici-types: 6.19.8
 
   '@types/node@22.13.1':
     dependencies:
@@ -2946,8 +2963,10 @@ snapshots:
 
   agent-base@7.1.3: {}
 
-  aht20-sensor@0.1.1:
+  aht20-sensor@1.0.2:
     dependencies:
+      '@types/i2c-bus': 5.1.2
+      '@types/node': 20.17.17
       i2c-bus: 5.2.3
 
   ajv@6.12.6:
@@ -4895,6 +4914,8 @@ snapshots:
       has-bigints: 1.1.0
       has-symbols: 1.1.0
       which-boxed-primitive: 1.1.1
+
+  undici-types@6.19.8: {}
 
   undici-types@6.20.0: {}
 
