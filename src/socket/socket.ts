@@ -69,7 +69,7 @@ export class Socket {
     return this.socketConnection;
   }
 
-  async on(listener: String, fn: Function) {
+  async on(listener: string, fn: Function) {
     this.onListeners.push({ on: listener, fn });
   }
 
