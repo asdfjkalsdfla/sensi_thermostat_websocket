@@ -8,6 +8,7 @@
   "packageRules": [
     {
       "groupName": "minors and patches",
+      "groupSlug": "minors-and-patches",
       "matchUpdateTypes": [
         "minor",
         "patch",
