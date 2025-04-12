@@ -5,10 +5,10 @@ import fs from 'fs';
 import https from 'https';
 import aht20 from 'aht20-sensor';
 import * as client from 'prom-client';
-import { Authorization } from './authorization.js';
-import { Socket } from './socket/socket.js';
-import { Thermostats } from './Thermostats.js';
-import * as config from './config.js';
+// import { Authorization } from './authorization.js';
+// import { Socket } from './socket/socket.js';
+// import { Thermostats } from './Thermostats.js';
+// import * as config from './config.js';
 import { nestThermostatListener } from './nestThermostatLister.js';
 import { OutsideAirTempFetcher } from './OutsideAirTempFetcher.js';
 import { TEMP_NUMBER_FORMATTER } from './Util.js'
@@ -37,35 +37,35 @@ register.registerMetric(gaugeHumidity);
 const gaugeHVACRunning = new client.Gauge({ name: 'hvac_running', help: 'indicates if the hvac is running', labelNames: ['level', 'mode'] });
 register.registerMetric(gaugeHVACRunning);
 
-// SETUP - Sensi Listener
-const authorization = new Authorization(
-  config.CLIENT_ID,
-  config.CLIENT_SECRET,
-  config.EMAIL,
-  config.PASSWORD
-);
+// // SETUP - Sensi Listener
+// const authorization = new Authorization(
+//   config.CLIENT_ID,
+//   config.CLIENT_SECRET,
+//   config.EMAIL,
+//   config.PASSWORD
+// );
 
-const sensiSocket = new Socket(authorization);
-// eslint-disable-next-line max-len
-const thermostats = new Thermostats(sensiSocket); // mixes the business logic and data access layer but ...
+// const sensiSocket = new Socket(authorization);
+// // eslint-disable-next-line max-len
+// const thermostats = new Thermostats(sensiSocket); // mixes the business logic and data access layer but ...
 
-console.log('Starting socket connection with Sensi');
-sensiSocket.startSocketConnection().catch((err) => {
-  console.error('could not setup socket connection', err);
-  process.exit(1);
-});
+// console.log('Starting socket connection with Sensi');
+// sensiSocket.startSocketConnection().catch((err) => {
+//   console.error('could not setup socket connection', err);
+//   process.exit(1);
+// });
 
-sensiSocket.on('state', (data: any) => {
-  thermostats.updateThermostats(data);
-  thermostats.forEach((thermostat) => {
-    gaugeTemp.set({ room: 'basemenet' }, thermostat.thermostatSensor_temp);
-    gaugeHumidity.set({ room: 'basemenet' }, thermostat.humidity);
-    gaugeHVACRunning.set({ level: 'basemenet', mode: 'system' }, +thermostat.is_running);
-    gaugeHVACRunning.set({ level: 'basemenet', mode: 'heat' }, +thermostat.is_running_heat);
-    gaugeHVACRunning.set({ level: 'basemenet', mode: 'auxheat' }, +thermostat.is_running_auxheat);
-    gaugeHVACRunning.set({ level: 'basemenet', mode: 'cool' }, +thermostat.is_running_cool);
-  });
-});
+// sensiSocket.on('state', (data: any) => {
+//   thermostats.updateThermostats(data);
+//   thermostats.forEach((thermostat) => {
+//     gaugeTemp.set({ room: 'basemenet' }, thermostat.thermostatSensor_temp);
+//     gaugeHumidity.set({ room: 'basemenet' }, thermostat.humidity);
+//     gaugeHVACRunning.set({ level: 'basemenet', mode: 'system' }, +thermostat.is_running);
+//     gaugeHVACRunning.set({ level: 'basemenet', mode: 'heat' }, +thermostat.is_running_heat);
+//     gaugeHVACRunning.set({ level: 'basemenet', mode: 'auxheat' }, +thermostat.is_running_auxheat);
+//     gaugeHVACRunning.set({ level: 'basemenet', mode: 'cool' }, +thermostat.is_running_cool);
+//   });
+// });
 
 const readTemperatureSensorData = async (sensor) => {
   const { humidity, temperature: temperatureC } = await sensor.readData();
@@ -105,42 +105,42 @@ const readTemperatureSensorDataContinuously = async (sensor) => {
   }
 };
 
-const setToRemoteThermostatTempContinuously = async () => {
-  while (true) {
-    await sleep(2.5 * 60 * 1000);
-    await setToRemoteThermostatTemp();
-  }
-};
+// const setToRemoteThermostatTempContinuously = async () => {
+//   while (true) {
+//     await sleep(2.5 * 60 * 1000);
+//     await setToRemoteThermostatTemp();
+//   }
+// };
 
-const setToRemoteThermostatTemp = async () => {
-  if (isWorkingTime()) return; // don't use this during working hours
-  try {
-    const tempResponse = await globalThis.fetch(REMOTE_TEMP_ADDRESS);
-    if (!tempResponse.ok) {
-      return;
-    }
-    const data: any = await tempResponse.json();
-    thermostats.forEach((thermostat) => {
-      thermostat.setThermostatTempToSensorTemp(data.temperatureF);
-    });
-  } catch (ex) {
-    console.log(ex);
-  }
-};
+// const setToRemoteThermostatTemp = async () => {
+//   if (isWorkingTime()) return; // don't use this during working hours
+//   try {
+//     const tempResponse = await globalThis.fetch(REMOTE_TEMP_ADDRESS);
+//     if (!tempResponse.ok) {
+//       return;
+//     }
+//     const data: any = await tempResponse.json();
+//     thermostats.forEach((thermostat) => {
+//       thermostat.setThermostatTempToSensorTemp(data.temperatureF);
+//     });
+//   } catch (ex) {
+//     console.log(ex);
+//   }
+// };
 
-const manageCirculatingFanSchedule = async () => {
-  while (true) {
-    const d = new Date();
-    thermostats.forEach((thermostat) => {
-      const fanShouldBeOn = !!(((d.getHours() < 19 && d.getHours() >= 12) && (d.getDay() > 0 && d.getDay() < 6) && thermostat.thermostat_temp > 70));
-      if (fanShouldBeOn !== thermostat.circulatingFanOn) {
-        thermostat.circulatingFanOn = fanShouldBeOn;
-        console.log('Changed Circulating Fan Status');
-      }
-    });
-    await sleep(5 * 60 * 1000);
-  }
-};
+// const manageCirculatingFanSchedule = async () => {
+//   while (true) {
+//     const d = new Date();
+//     thermostats.forEach((thermostat) => {
+//       const fanShouldBeOn = !!(((d.getHours() < 19 && d.getHours() >= 12) && (d.getDay() > 0 && d.getDay() < 6) && thermostat.thermostat_temp > 70));
+//       if (fanShouldBeOn !== thermostat.circulatingFanOn) {
+//         thermostat.circulatingFanOn = fanShouldBeOn;
+//         console.log('Changed Circulating Fan Status');
+//       }
+//     });
+//     await sleep(5 * 60 * 1000);
+//   }
+// };
 
 // SETUP - Express Endpoints
 
