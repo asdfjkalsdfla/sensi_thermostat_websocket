@@ -6,7 +6,22 @@ const { NEST_THERMOSTAT_ID } = process.env;
 
 const updatePrometheusWithNestStatusUpdate = ( message, gaugeTemp, gaugeHumidity, gaugeHVACRunning )  => {
   // Bad way to do this, but hey...
-  const thermostatRoom = message?.name === NEST_THERMOSTAT_ID ? 'main' : 'upstairs';
+  let thermostatRoom;
+  const id = message?.name.split('/')[3]; // find 
+  switch (id) {
+    case NEST_DEVICEID_1:
+      thermostatRoom = 'basement'; 
+      break;
+    case NEST_DEVICEID_2:
+      thermostatRoom = 'upstairs'; 
+      break;
+    case NEST_DEVICEID_3:
+      thermostatRoom = 'main'; 
+      break;
+    default:
+      thermostatRoom = 'unknown'; 
+      console.log(`Not found.`);
+  }
   const tempC = message?.traits['sdm.devices.traits.Temperature']?.ambientTemperatureCelsius;
   if (tempC) {
     const tempF = tempC * 1.8 + 32;
@@ -51,8 +66,8 @@ const fetchStatus = async (gaugeTemp, gaugeHumidity, gaugeHVACRunning)  => {
     const authTokenBody = await authTokenRequest.json();
     const authToken = authTokenBody.access_token;
     const household = process.env.NEST_HOUSEHOLD;
-    const { NEST_DEVICEID_1, NEST_DEVICEID_2 } = process.env;
-    const deviceIDs = [ NEST_DEVICEID_1, NEST_DEVICEID_2 ];
+    const { NEST_DEVICEID_1, NEST_DEVICEID_2, NEST_DEVICEID_3 } = process.env;
+    const deviceIDs = [ NEST_DEVICEID_1, NEST_DEVICEID_2, NEST_DEVICEID_3 ];
     deviceIDs.forEach ( async (deviceID) => {
       const deviceInfoRequest = await fetch(
         `https://smartdevicemanagement.googleapis.com/v1/enterprises/${household}/devices/${deviceID}`,
