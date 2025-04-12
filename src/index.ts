@@ -93,12 +93,12 @@ const readTemperatureSensorDataContinuously = async (sensor) => {
       // console.log(`In average temp with value of ${avgTemps}`);
       gaugeTemp.set({ room: 'office' }, TEMP_NUMBER_FORMATTER.format(avgTemps));
       gaugeHumidity.set({ room: 'office' }, TEMP_NUMBER_FORMATTER.format(avgHumidity));
-      if (isWorkingTime()) {
-        thermostats.forEach((thermostat) => {
-          let a = 1;
-          // thermostat.setThermostatTempToSensorTemp(avgTemps);
-        });
-      }
+      // if (isWorkingTime()) {
+      //   thermostats.forEach((thermostat) => {
+      //     let a = 1;
+      //     // thermostat.setThermostatTempToSensorTemp(avgTemps);
+      //   });
+      // }
       tempReadings = [];
       humidityReadings = []
     }
