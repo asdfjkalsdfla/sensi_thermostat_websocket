@@ -2,7 +2,7 @@
 import { PubSub } from '@google-cloud/pubsub';
 import { TEMP_NUMBER_FORMATTER } from './Util.js'
 
-const { NEST_THERMOSTAT_ID } = process.env;
+const { NEST_DEVICEID_1, NEST_DEVICEID_2, NEST_DEVICEID_3 } = process.env;
 
 const updatePrometheusWithNestStatusUpdate = ( message, gaugeTemp, gaugeHumidity, gaugeHVACRunning )  => {
   // Bad way to do this, but hey...
