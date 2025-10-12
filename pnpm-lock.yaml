@@ -12,8 +12,8 @@ importers:
         specifier: ^5.2.0
         version: 5.2.0
       aht20-sensor:
-        specifier: ^0.1.1
-        version: 0.1.1
+        specifier: ^1.0.2
+        version: 1.0.2
       dotenv:
         specifier: ^17.2.3
         version: 17.2.3
@@ -563,11 +563,17 @@ packages:
   '@types/estree@1.0.8':
     resolution: {integrity: sha512-dWHzHa2WqEXI/O1E9OjrocMTKJl2mSrEolh1Iomrv6U+JuNwaHXsXx9bLu5gG7BUWFIN0skIQJQ/L1rIex4X6w==}
 
+  '@types/i2c-bus@5.1.2':
+    resolution: {integrity: sha512-Zph1a3TZnvU8yUEhR8Yvv+Fv61dE3WQ2gMs4B2KgBUuKYE73quagMvmUN9EvRIbf4B+zq1WKMYjLOafdNus1ig==}
+
   '@types/json-schema@7.0.15':
     resolution: {integrity: sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==}
 
   '@types/json5@0.0.29':
     resolution: {integrity: sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==}
+
+  '@types/node@20.19.21':
+    resolution: {integrity: sha512-CsGG2P3I5y48RPMfprQGfy4JPRZ6csfC3ltBZSRItG3ngggmNY/qs2uZKp4p9VbrpqNNSMzUZNFZKzgOGnd/VA==}
 
   '@types/node@22.18.10':
     resolution: {integrity: sha512-anNG/V/Efn/YZY4pRzbACnKxNKoBng2VTFydVu8RRs5hQjikP8CQfaeAV59VFSCzKNp90mXiVXW2QzV56rwMrg==}
@@ -694,8 +700,8 @@ packages:
     resolution: {integrity: sha512-MnA+YT8fwfJPgBx3m60MNqakm30XOkyIoH1y6huTQvC0PwZG7ki8NacLBcrPbNoo8vEZy7Jpuk7+jMO+CUovTQ==}
     engines: {node: '>= 14'}
 
-  aht20-sensor@0.1.1:
-    resolution: {integrity: sha512-ITjnBAOKIaTl5l78LiVWRI0s2uEADKLXUU7QUCv6w4ETA5VroKzLMG71BX9CeLdcrBjq5kLs37U7CG85c6PalQ==}
+  aht20-sensor@1.0.2:
+    resolution: {integrity: sha512-jv83EZy+e/qHzLHLBCeRA+7KzPENdxOmNu9MH7D7qDfgHRm3c4ZRr/QlKxf9znGYX6kZCJt3a3ztYoVdPTn8rg==}
 
   ajv@6.12.6:
     resolution: {integrity: sha512-j3fVLgvTo527anyYyJOGTYJbG+vnnQYvE0m5mmkc1TK+nxAppkCLMIL0aZ4dblVCNoGShhm+kzE4ZUykBoMg4g==}
@@ -2786,9 +2792,17 @@ snapshots:
 
   '@types/estree@1.0.8': {}
 
+  '@types/i2c-bus@5.1.2':
+    dependencies:
+      '@types/node': 22.18.10
+
   '@types/json-schema@7.0.15': {}
 
   '@types/json5@0.0.29': {}
+
+  '@types/node@20.19.21':
+    dependencies:
+      undici-types: 6.21.0
 
   '@types/node@22.18.10':
     dependencies:
@@ -2969,8 +2983,10 @@ snapshots:
 
   agent-base@7.1.4: {}
 
-  aht20-sensor@0.1.1:
+  aht20-sensor@1.0.2:
     dependencies:
+      '@types/i2c-bus': 5.1.2
+      '@types/node': 20.19.21
       i2c-bus: 5.2.3
 
   ajv@6.12.6:
