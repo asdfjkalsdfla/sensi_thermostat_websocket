@@ -1,6 +1,6 @@
 {
   "name": "sensi_thermostat_websocket",
-  "packageManager": "pnpm@10.24.0",
+  "packageManager": "pnpm@10.25.0",
   "version": "0.0.1",
   "type": "module",
   "dependencies": {
@@ -14,19 +14,19 @@
     "typescript": "5.9.3"
   },
   "devDependencies": {
-    "@eslint/js": "^9.39.1",
+    "@eslint/js": "^9.39.2",
     "@faker-js/faker": "^10.1.0",
-    "@types/node": "^24.10.1",
+    "@types/node": "^24.10.4",
     "@vitest/coverage-v8": "^3.2.4",
     "esbuild": "^0.27.1",
-    "eslint": "^9.39.1",
+    "eslint": "^9.39.2",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-airbnb-typescript": "^18.0.0",
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.0.1",
-    "typescript-eslint": "^8.48.1",
+    "typescript-eslint": "^8.49.0",
     "undici": "^7.16.0",
     "vitest": "^3.2.4"
   },
