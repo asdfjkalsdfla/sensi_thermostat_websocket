@@ -26,8 +26,8 @@
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.0.1",
-    "typescript-eslint": "^8.57.0",
-    "undici": "^7.24.3",
+    "typescript-eslint": "^8.57.1",
+    "undici": "^7.24.5",
     "vitest": "^3.2.4"
   },
   "scripts": {
