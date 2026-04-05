@@ -15,14 +15,25 @@ import { Authorization } from '../../src/authorization.js';
 //   isRefreshTokenAvailable: vi.fn()
 // };
 
-vi.mock('../../src/authorization.js', () => ({
-  Authorization: vi.fn().mockImplementation(() => ({
-    accessToken: faker.string.uuid(),
-    login: vi.fn().mockResolvedValue(null),
-    refreshAccessToken: vi.fn().mockResolvedValue(null),
-    isRefreshTokenAvailable: vi.fn()
-  }))
-}));
+vi.mock('../../src/authorization.js', () => {
+  class MockAuthorization {
+    accessToken: string;
+    login: any;
+    refreshAccessToken: any;
+    isRefreshTokenAvailable: any;
+    
+    constructor() {
+      this.accessToken = faker.string.uuid();
+      this.login = vi.fn().mockResolvedValue(null);
+      this.refreshAccessToken = vi.fn().mockResolvedValue(null);
+      this.isRefreshTokenAvailable = vi.fn();
+    }
+  }
+  
+  return {
+    Authorization: MockAuthorization
+  };
+});
 
 // config mock
 // let mockEndpoint = faker.internet.url();
@@ -47,7 +58,7 @@ vi.mock('socket.io-client', () => ({
 }));
 
 import socketIO from 'socket.io-client';
-const mockSocketIO = socketIO;
+const mockSocketIO = vi.mocked(socketIO);
 
 // socket helper mock
 import { SocketHelper } from '../../src/socket/socket_helper.js';
@@ -60,7 +71,7 @@ import { Socket } from '../../src/socket/socket.js';
 
 describe('socket', () => {
   console.error = vi.fn();
-  let authorization;
+  let authorization: any;
 
   beforeEach(() => {
     authorization = new Authorization(
@@ -86,19 +97,19 @@ describe('socket', () => {
     expect(mockSocketIO).not.toHaveBeenCalled();
   });
 
-  test('login if refresh token is not available', () => {
+  test('login if refresh token is not available', async () => {
     authorization.isRefreshTokenAvailable.mockReturnValue(false);
     const socket = new Socket(authorization);
-    socket.startSocketConnection();
+    await socket.startSocketConnection();
     expect(authorization.login).toHaveBeenCalled();
     expect(authorization.refreshAccessToken).not.toHaveBeenCalled();
     // expect(authorization.login).toHaveBeenCalledBefore(mockSocket);
   });
 
-  test('get new access token if a refresh token is available', () => {
+  test('get new access token if a refresh token is available', async () => {
     authorization.isRefreshTokenAvailable.mockReturnValue(true);
     const socket = new Socket(authorization);
-    socket.startSocketConnection();
+    await socket.startSocketConnection();
     expect(authorization.refreshAccessToken).toHaveBeenCalled();
     expect(authorization.login).not.toHaveBeenCalled();
     // expect(authorization.refreshAccessToken).toHaveBeenCalledBefore(mockSocket);
